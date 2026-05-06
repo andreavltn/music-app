@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane style="-fx-background-color: #1e1e2e;" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="collection.view.MainController">
+
+   <!-- MENU EN HAUT (recherche et filtre) -->
+   <top>
+      <HBox style="-fx-background-color: #2a2a3e; -fx-padding: 10; -fx-spacing: 10;">
+
+         <!-- champ de recherche à gauche -->
+         <TextField fx:id="searchField" prefHeight="26.0" prefWidth="227.0"
+                    promptText="Recherche..."
+                    style="-fx-background-color: #3a3a4e; -fx-text-fill: white;"/>
+
+         <!-- Region qui pousse tout ce qui suit vers la droite -->
+         <Region HBox.hgrow="ALWAYS"/>
+
+         <!-- tri aligné à droite -->
+         <Label style="-fx-text-fill: white;" text="Trier par :"/>
+         <ComboBox fx:id="sortComboBox" prefHeight="26.0" prefWidth="102.0"
+                   style="-fx-background-color: #3a3a4e; -fx-text-fill: white;"/>
+         <Button fx:id="sortOrderBtn" onAction="#onToggleSortOrder"
+                 prefHeight="26.0" prefWidth="30.0"
+                 style="-fx-background-color: #3a3a4e; -fx-text-fill: white;" text="↑"/>
+      </HBox>
+   </top>
+
+   <!-- CENTRE (liste des titres + détails du titre) -->
+   <center>
+      <HBox>
+         <ListView fx:id="trackListView" style="-fx-background-color: #1e1e2e;" HBox.hgrow="ALWAYS"/>
+         <VBox prefWidth="250" style="-fx-background-color: #2a2a3e; -fx-padding: 16; -fx-spacing: 8;"/>
+      </HBox>
+   </center>
+
+   <!-- MENU EN BAS (boutons) -->
+   <bottom>
+      <HBox spacing="10" style="-fx-background-color: #2a2a3e; -fx-padding: 10;">
+         <Button onAction="#onAdd" style="-fx-background-color: #27ae60; -fx-text-fill: white;" text="Ajouter un titre"/>
+         <Button onAction="#onStats" style="-fx-background-color: #8e44ad; -fx-text-fill: white;" text="Accéder aux statistiques"/>
+         <Label fx:id="countLabel" style="-fx-text-fill: #aaa;"/>
+      </HBox>
+   </bottom>
+
+</BorderPane>
