@@ -17,37 +17,32 @@
       <HBox style="-fx-background-color: #2a2a3e; -fx-padding: 10; -fx-spacing: 10;">
 
          <!-- champ de recherche à gauche -->
-         <TextField fx:id="searchField" prefHeight="26.0" prefWidth="227.0"
-                    promptText="Recherche..."
-                    style="-fx-background-color: #3a3a4e; -fx-text-fill: white;"/>
+         <TextField fx:id="searchField" prefHeight="26.0" prefWidth="227.0" promptText="Recherche..." style="-fx-background-color: #3a3a4e; -fx-text-fill: white;" />
 
          <!-- Region qui pousse tout ce qui suit vers la droite -->
-         <Region HBox.hgrow="ALWAYS"/>
+         <Region HBox.hgrow="ALWAYS" />
 
          <!-- tri aligné à droite -->
-         <Label style="-fx-text-fill: white;" text="Trier par :"/>
-         <ComboBox fx:id="sortComboBox" prefHeight="26.0" prefWidth="102.0"
-                   style="-fx-background-color: #3a3a4e; -fx-text-fill: white;"/>
-         <Button fx:id="sortOrderBtn" onAction="#onToggleSortOrder"
-                 prefHeight="26.0" prefWidth="30.0"
-                 style="-fx-background-color: #3a3a4e; -fx-text-fill: white;" text="↑"/>
+         <Label style="-fx-text-fill: white;" text="Trier par :" />
+         <ComboBox fx:id="sortComboBox" prefHeight="26.0" prefWidth="102.0" style="-fx-background-color: #3a3a4e; -fx-text-fill: white;" />
+         <Button fx:id="sortOrderBtn" onAction="#onToggleSortOrder" prefHeight="26.0" prefWidth="30.0" style="-fx-background-color: #3a3a4e; -fx-text-fill: white;" text="↑" />
       </HBox>
    </top>
 
    <!-- CENTRE (liste des titres + détails du titre) -->
    <center>
       <HBox>
-         <ListView fx:id="trackListView" style="-fx-background-color: #1e1e2e;" HBox.hgrow="ALWAYS"/>
-         <VBox prefWidth="250" style="-fx-background-color: #2a2a3e; -fx-padding: 16; -fx-spacing: 8;"/>
+         <ListView fx:id="trackListView" style="-fx-background-color: #1e1e2e;" HBox.hgrow="NEVER" />
+         <VBox prefWidth="250" style="-fx-background-color: #2a2a3e; -fx-padding: 16; -fx-spacing: 8;" HBox.hgrow="ALWAYS" />
       </HBox>
    </center>
 
    <!-- MENU EN BAS (boutons) -->
    <bottom>
       <HBox spacing="10" style="-fx-background-color: #2a2a3e; -fx-padding: 10;">
-         <Button onAction="#onAdd" style="-fx-background-color: #27ae60; -fx-text-fill: white;" text="Ajouter un titre"/>
-         <Button onAction="#onStats" style="-fx-background-color: #8e44ad; -fx-text-fill: white;" text="Accéder aux statistiques"/>
-         <Label fx:id="countLabel" style="-fx-text-fill: #aaa;"/>
+         <Button onAction="#onAdd" style="-fx-background-color: #27ae60; -fx-text-fill: white;" text="Ajouter un titre" />
+         <Button onAction="#onStats" style="-fx-background-color: #8e44ad; -fx-text-fill: white;" text="Accéder aux statistiques" />
+         <Label fx:id="countLabel" style="-fx-text-fill: #aaa;" />
       </HBox>
    </bottom>
 
