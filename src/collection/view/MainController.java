@@ -2,6 +2,7 @@ package collection.view;
 
 import collection.model.Track;
 import collection.viewmodel.LibraryViewModel;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 
@@ -9,12 +10,20 @@ import java.util.Comparator;
 
 public class MainController {
 
-    // récupère les composants par leur fx:id
+    // récupère les composants de l'interface
     @FXML private ListView<Track> trackListView; // liste des titres
     @FXML private TextField searchField; // barre de recherche
     @FXML private Label countLabel; // nombre de titres
     @FXML private ComboBox<String> sortComboBox; // liste déroulante de choix du tri
     @FXML private Button sortOrderBtn; // bouton d'ordre du tri
+
+    // récupère labels des détails du titre
+    @FXML private Label detailTitle;
+    @FXML private Label detailArtist;
+    @FXML private Label detailAlbum;
+    @FXML private Label detailGenre;
+    @FXML private Label detailYear;
+    @FXML private Label detailDuration;
 
     private LibraryViewModel viewModel;
     private boolean isSortingAscending = true; // sens du tri (ascendant/descendant)
@@ -25,6 +34,11 @@ public class MainController {
 
         // branche l'affichage sur la liste observable du ViewModel
         trackListView.setItems(viewModel.getTracks());
+
+        // à chaque sélection d'un titre dans la liste
+        trackListView.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
+            showDetail(newVal); // affiche les détails du titre
+        });
 
         // à chaque entrée dans la barre de recherche
         searchField.textProperty().addListener((obs, oldVal, newVal) -> {
@@ -43,6 +57,28 @@ public class MainController {
         });
 
         updateCount(); // met à jour le nombre de titres
+    }
+
+    // affiche les détails d'un titre sur le panneau à droite
+    private void showDetail(Track t) {
+
+        // si aucun titre sélectionné
+        if (t == null) {
+            detailTitle.setText("");
+            detailArtist.setText("");
+            detailAlbum.setText("");
+            detailGenre.setText("");
+            detailYear.setText("");
+            detailDuration.setText("");
+        } else {
+            // sinon affiche ses informations
+            detailTitle.setText(t.getTitle());
+            detailArtist.setText("Artiste : " + t.getArtistName());
+            detailAlbum.setText("Album : " + t.getAlbumTitle());
+            detailGenre.setText("Genre : " + t.getGenre());
+            detailYear.setText("Année : " + t.getYear());
+            detailDuration.setText("Durée : " + t.getFormattedDuration());
+        }
     }
 
     // construit le comparateur selon le critère choisi
@@ -80,5 +116,27 @@ public class MainController {
     private void updateCount() {
         int n = viewModel.getTracks().size();
         countLabel.setText(n + " titre(s)");
+    }
+
+    @FXML
+    public void onEdit() {
+        Track selected = trackListView.getSelectionModel().getSelectedItem(); // récupère le titre
+        if (selected != null) {
+            openEditForm(selected); // ouvre le formulaire d'édition
+        }
+    }
+
+    @FXML
+    public void onDelete() {
+        Track selected = trackListView.getSelectionModel().getSelectedItem(); // récupère le titre
+        if (selected != null) {
+            viewModel.removeTrack(selected); // supprime le titre
+            trackListView.getSelectionModel().clearSelection(); // aucun titre n'est sélectionné
+            updateCount(); // met à jour le nombre de titres
+        }
+    }
+
+    private void openEditForm(Track track) {
+
     }
 }

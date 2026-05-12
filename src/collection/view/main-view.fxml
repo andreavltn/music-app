@@ -33,7 +33,18 @@
    <center>
       <HBox>
          <ListView fx:id="trackListView" style="-fx-background-color: #1e1e2e;" HBox.hgrow="NEVER" />
-         <VBox prefWidth="250" style="-fx-background-color: #2a2a3e; -fx-padding: 16; -fx-spacing: 8;" HBox.hgrow="ALWAYS" />
+         <VBox prefWidth="250" style="-fx-background-color: #2a2a3e; -fx-padding: 16; -fx-spacing: 8;">
+            <Label text="Détails" style="-fx-text-fill: #aaa; -fx-font-size: 11;"/>
+            <Label fx:id="detailTitle" style="-fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 14; -fx-wrap-text: true;"/>
+            <Label fx:id="detailArtist" style="-fx-text-fill: #ccc; -fx-wrap-text: true;"/>
+            <Label fx:id="detailAlbum" style="-fx-text-fill: #ccc; -fx-wrap-text: true;"/>
+            <Label fx:id="detailGenre" style="-fx-text-fill: #aaa;"/>
+            <Label fx:id="detailYear" style="-fx-text-fill: #aaa;"/>
+            <Label fx:id="detailDuration" style="-fx-text-fill: #aaa;"/>
+            <Region VBox.vgrow="ALWAYS"/>
+            <Button onAction="#onEdit" text="Modifier" style="-fx-background-color: #2980b9; -fx-text-fill: white;" maxWidth="Infinity"/>
+            <Button onAction="#onDelete" text="Supprimer" style="-fx-background-color: #c0392b; -fx-text-fill: white;" maxWidth="Infinity"/>
+         </VBox>
       </HBox>
    </center>
 
