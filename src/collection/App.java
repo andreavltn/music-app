@@ -18,7 +18,7 @@ public class App extends Application {
         // crée la scène
         Scene scene = new Scene(loader.load(), 1000, 650);
 
-        stage.setTitle("Collection musicale"); // titre
+        stage.setTitle("MusicApp"); // titre
         stage.setScene(scene); // lier la scène
         stage.show(); // afficher
     }

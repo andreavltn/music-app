@@ -23,6 +23,27 @@ public class LibraryViewModel {
     public LibraryViewModel() {
         this.library = new Library();
         library.replaceAll(JsonManager.load()); // charge la librairie (si elle existe)
+
+        // TEST -------------------
+        if (library.getTracks().isEmpty()) {
+            library.add(new Track(1,  "Bohemian Rhapsody",      "Rock",       1975, 354));
+            library.add(new Track(2,  "Billie Jean",             "Pop",        1982, 294));
+            library.add(new Track(3,  "Lose Yourself",           "Rap",        2002, 326));
+            library.add(new Track(4,  "Smells Like Teen Spirit", "Rock",       1991, 301));
+            library.add(new Track(5,  "Hotel California",        "Rock",       1977, 391));
+            library.add(new Track(6,  "Thriller",                "Pop",        1982, 358));
+            library.add(new Track(7,  "Superstition",            "Soul",       1972, 245));
+            library.add(new Track(8,  "Respect",                 "Soul",       1967, 147));
+            library.add(new Track(9,  "What's Going On",         "Soul",       1971, 235));
+            library.add(new Track(10, "Like a Rolling Stone",    "Rock",       1965, 369));
+            library.add(new Track(11, "Purple Rain",             "Pop",        1984, 520));
+            library.add(new Track(12, "Killing Me Softly",       "Pop",        1973, 280));
+            library.add(new Track(13, "Enter Sandman",           "Metal",      1991, 331));
+            library.add(new Track(14, "One More Time",           "Electronic", 2001, 320));
+            library.add(new Track(15, "Redbone",                 "Soul",       2016, 295));
+        }
+        // ------------------------
+
         this.filteredTracks = new FilteredList<>(library.getTracks()); // liste des titres (filtrée)
         this.sortedTracks = new SortedList<>(filteredTracks); // liste des titres (filtrée et triée)
     }

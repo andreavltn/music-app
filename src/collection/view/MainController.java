@@ -5,6 +5,8 @@ import collection.viewmodel.LibraryViewModel;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 
+import java.util.Comparator;
+
 public class MainController {
 
     // récupère les composants par leur fx:id
@@ -15,22 +17,64 @@ public class MainController {
     @FXML private Button sortOrderBtn; // bouton d'ordre du tri
 
     private LibraryViewModel viewModel;
+    private boolean isSortingAscending = true; // sens du tri (ascendant/descendant)
 
-    // appelé automatiquement après chargement de l'affichage
-    @FXML
+    @FXML // appelé automatiquement après chargement de l'affichage
     public void initialize() {
         this.viewModel = new LibraryViewModel();
 
         // branche l'affichage sur la liste observable du ViewModel
         trackListView.setItems(viewModel.getTracks());
 
+        // à chaque entrée dans la barre de recherche
+        searchField.textProperty().addListener((obs, oldVal, newVal) -> {
+            viewModel.filter(newVal); // filtre les titres affichés
+            updateCount(); // met à jour le nombre de titres
+        });
+
+        // ajout des options de tri à la liste
+        sortComboBox.getItems().addAll("Titre", "Artiste", "Genre", "Année", "Durée");
+
+        // à chaque changement de critère de tri
+        sortComboBox.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal != null) {
+                applySortFromCombo(newVal); // applique le tri correspondant
+            }
+        });
+
         updateCount(); // met à jour le nombre de titres
     }
 
-    // action des boutons (vide pour l'instant)
-    @FXML private void onAdd() {}
-    @FXML private void onStats() {}
-    @FXML private void onToggleSortOrder() {}
+    // construit le comparateur selon le critère choisi
+    private void applySortFromCombo(String sortingChoice) {
+        Comparator<Track> comp = switch (sortingChoice) {
+            // par titre/artiste/genre : ignore la casse
+            case "Titre" -> Comparator.comparing(Track::getTitle, String.CASE_INSENSITIVE_ORDER);
+            case "Artiste" -> Comparator.comparing(Track::getArtistName, String.CASE_INSENSITIVE_ORDER);
+            case "Genre" -> Comparator.comparing(Track::getGenre, String.CASE_INSENSITIVE_ORDER);
+            // sinon avec des nombres, tri classique
+            case "Année" -> Comparator.comparingInt(Track::getYear);
+            case "Durée" -> Comparator.comparingInt(Track::getDuration);
+            default -> null;
+        };
+        viewModel.sort(comp, isSortingAscending); // envoie le tri au modèle
+    }
+
+    @FXML // au clic sur le bouton d'ordre du tri (ascendant/descendant)
+    private void onToggleSortOrder() {
+        isSortingAscending = !isSortingAscending; // inverse l'ordre du tri
+        sortOrderBtn.setText(isSortingAscending ? "↑" : "↓"); // change le texte du bouton
+        String selected = sortComboBox.getValue(); // récupère la nouvelle valeur de tri
+        if (selected != null) {
+            applySortFromCombo(selected); // applique le tri associé à cette valeur
+        }
+    }
+
+    @FXML
+    private void onAdd() {}
+
+    @FXML
+    private void onStats() {}
 
     // méthode qui met à jour le nombre de titres
     private void updateCount() {
