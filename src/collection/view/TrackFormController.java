@@ -10,6 +10,8 @@ import javafx.stage.Stage;
 public class TrackFormController {
 
     // récupère les composants de l'interface
+    @FXML private TextField artistField;
+    @FXML private TextField albumField;
     @FXML private TextField titleField;
     @FXML private TextField genreField;
     @FXML private TextField yearField;
@@ -30,6 +32,8 @@ public class TrackFormController {
         if (track != null) {
 
             // remplit les champs avec les données existantes
+            artistField.setText(track.getArtistName());
+            albumField.setText(track.getAlbumTitle());
             titleField.setText(track.getTitle());
             genreField.setText(track.getGenre());
             yearField.setText(String.valueOf(track.getYear()));
@@ -50,6 +54,8 @@ public class TrackFormController {
     private void onSave() {
 
         // récupère et valide les champs
+        String artist = artistField.getText().trim();
+        String album = albumField.getText().trim();
         String title = titleField.getText().trim();
         String genre = genreField.getText().trim();
 
@@ -81,8 +87,9 @@ public class TrackFormController {
         if (this.track == null) {
 
             // crée un nouveau titre avec les données du formulaire
-            Track t = new Track(viewModel.createId(), title, genre, year, duration);
-            viewModel.addTrack(t); // ajout à la librairie
+            Track track = new Track(viewModel.createTrackId(), title, genre, year, duration);
+            viewModel.linkTrack(track, artist, album); // lie le titre à l'artiste et l'album
+            viewModel.addTrack(track); // ajout à la librairie
 
         } else { // sinon c'est un formulaire de modification
 
@@ -91,6 +98,9 @@ public class TrackFormController {
             track.setGenre(genre);
             track.setYear(year);
             track.setDuration(duration);
+
+            // lie le titre à l'artiste et l'album
+            viewModel.linkTrack(track, artist, album);
 
             // met à jour le titre dans la librairie
             viewModel.updateTrack(track);

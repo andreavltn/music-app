@@ -92,5 +92,7 @@ public class Track {
     }
 
     @Override
-    public String toString() { return title + " - " + getArtistName(); }
+    public String toString() {
+        return title + " - " + getArtistName() + " (" + getFormattedDuration() + ")";
+    }
 }

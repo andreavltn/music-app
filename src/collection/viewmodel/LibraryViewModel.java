@@ -1,5 +1,7 @@
 package collection.viewmodel;
 
+import collection.model.Album;
+import collection.model.Artist;
 import collection.model.Library;
 import collection.model.Track;
 import collection.util.JsonManager;
@@ -7,6 +9,7 @@ import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
@@ -26,26 +29,32 @@ public class LibraryViewModel {
 
         // TEST -------------------
         if (library.getTracks().isEmpty()) {
-            library.add(new Track(1,  "Bohemian Rhapsody",      "Rock",       1975, 354));
-            library.add(new Track(2,  "Billie Jean",             "Pop",        1982, 294));
-            library.add(new Track(3,  "Lose Yourself",           "Rap",        2002, 326));
-            library.add(new Track(4,  "Smells Like Teen Spirit", "Rock",       1991, 301));
-            library.add(new Track(5,  "Hotel California",        "Rock",       1977, 391));
-            library.add(new Track(6,  "Thriller",                "Pop",        1982, 358));
-            library.add(new Track(7,  "Superstition",            "Soul",       1972, 245));
-            library.add(new Track(8,  "Respect",                 "Soul",       1967, 147));
-            library.add(new Track(9,  "What's Going On",         "Soul",       1971, 235));
-            library.add(new Track(10, "Like a Rolling Stone",    "Rock",       1965, 369));
-            library.add(new Track(11, "Purple Rain",             "Pop",        1984, 520));
-            library.add(new Track(12, "Killing Me Softly",       "Pop",        1973, 280));
-            library.add(new Track(13, "Enter Sandman",           "Metal",      1991, 331));
-            library.add(new Track(14, "One More Time",           "Electronic", 2001, 320));
-            library.add(new Track(15, "Redbone",                 "Soul",       2016, 295));
+            Track t1 = new Track(1, "Bohemian Rhapsody", "Rock", 1975, 354);
+            library.linkTrackToArtistAndAlbum(t1, "Queen", "A Night at the Opera");
+            library.add(t1);
+
+            Track t2 = new Track(2, "Billie Jean", "Pop", 1982, 294);
+            library.linkTrackToArtistAndAlbum(t2, "Michael Jackson", "Thriller");
+            library.add(t2);
+
+            Track t3 = new Track(3, "Lose Yourself", "Rap", 2002, 326);
+            library.linkTrackToArtistAndAlbum(t3, "Eminem", "8 Mile");
+            library.add(t3);
+
+            Track t4 = new Track(4, "Smells Like Teen Spirit", "Rock", 1991, 301);
+            library.linkTrackToArtistAndAlbum(t4, "Nirvana", "Nevermind");
+            library.add(t4);
+
+            Track t5 = new Track(5, "Hotel California", "Rock", 1977, 391);
+            library.linkTrackToArtistAndAlbum(t5, "Eagles", "Hotel California");
+            library.add(t5);
         }
         // ------------------------
 
         this.filteredTracks = new FilteredList<>(library.getTracks()); // liste des titres (filtrée)
         this.sortedTracks = new SortedList<>(filteredTracks); // liste des titres (filtrée et triée)
+
+        JsonSave();
     }
 
     public ObservableList<Track> getTracks() {
@@ -56,8 +65,8 @@ public class LibraryViewModel {
         return this.library;
     }
 
-    public int createId() {
-        return this.library.createId();
+    public int createTrackId() {
+        return this.library.createTrackId();
     }
 
     // appelée à chaque nouvelle entrée dans la barre de recherche
@@ -114,30 +123,95 @@ public class LibraryViewModel {
 
     // ajoute un titre à la librairie
     public void addTrack(Track track) {
-        library.add(track);
-        JsonManager.save(library.getTracks()); // sauvegarde
+        library.add(track); // ajoute le titre
+        JsonSave(); // sauvegarde
     }
 
     // supprime un titre de la librairie
     public void removeTrack(Track track) {
-        library.remove(track);
-        JsonManager.save(library.getTracks()); // sauvegarde
+        library.remove(track); // supprime le titre
+        JsonSave(); // sauvegarde
     }
 
     // met à jour un titre de la librairie
     public void updateTrack(Track track) {
-        library.update(track);
-        JsonManager.save(library.getTracks()); // sauvegarde
+        library.update(track); // met à jour le titre
+        JsonSave(); // sauvegarde
+    }
+
+    // vide les listes internes pour éviter le bouclage infini
+    private void clearLinks() {
+        List<Track> tracks = library.getTracks(); // récupère les titres
+        for (Track t : tracks) { // pour chaque titre
+            Album album = t.getAlbum();
+            if (album != null) { // si l'album existe
+                album.getTracks().clear(); // vide sa liste de titres
+                Artist artist = album.getArtist(); // récupère l'artiste qui l'a réalisé
+                if (artist != null) { // si l'artiste existe
+                    artist.getAlbums().clear(); // vide la liste des albums qu'il a réalisé
+                }
+            }
+        }
+    }
+
+    // reconstruit les listes internes
+    private void buildLinks() {
+        List<Track> tracks = library.getTracks(); // récupère les titres
+        for (Track t : tracks) { // pour chaque titre
+            Artist artist = t.getArtist(); // récupère l'artiste qui l'a réalisé
+            Album album = t.getAlbum(); // récupère l'album dont il fait partie
+
+            // recrée tous les liens
+            library.linkTrackToArtistAndAlbum(t, t.getArtistName(), t.getAlbumTitle());
+        }
     }
 
     // importe une liste de titres qui remplace celle de la librairie
     public void importTracks(List<Track> tracks) {
-        library.replaceAll(tracks);
-        JsonManager.save(library.getTracks()); // sauvegarde
+        library.replaceAll(tracks); // remplace tous les titres de la librairie
+        JsonSave();
     }
 
     // récupère la liste des titres de la librairie
     public List<Track> exportTracks() {
-        return library.getTracks();
+
+        ArrayList<Track> tracksToExport = new ArrayList<>(); // liste d'exportation vide
+        List<Track> tracks = library.getTracks(); // liste des titres originale
+
+        for (Track track : tracks) { // pour chaque titre
+
+            Track cloneTrack = new Track(track.getId(), track.getTitle(), track.getGenre(),
+                    track.getYear(), track.getDuration()); // crée une copie indépendante
+
+            Album album = track.getAlbum(); // récupère l'album du titre original
+            if (album != null) { // si il existe
+
+                Album cleanAlbum = new Album(track.getId(), track.getAlbumTitle(),
+                        track.getYear()); // recrée un album propre
+
+                if (album.getArtist() != null) { // si l'artiste de l'album existe
+
+                    Artist cleanArtist = new Artist(track.getAlbum().getArtist().getId(),
+                            track.getArtistName()); // récrée un artiste propre
+
+                    cleanAlbum.setArtist(cleanArtist); // associe l'artiste à l'album
+                }
+                cloneTrack.setAlbum(cleanAlbum); // associe l'album au titre
+            }
+            tracksToExport.add(cloneTrack); // ajoute le titre à la liste d'exportation
+        }
+        return tracksToExport; // renvoie la liste propre
+    }
+
+    // lie un titre à un artiste et un album
+    public void linkTrack(Track track, String artistName, String albumTitle) {
+        this.library.linkTrackToArtistAndAlbum(track, artistName, albumTitle);
+    }
+
+    // sauvegarde sécurisée de la librairie dans "library.json"
+    private void JsonSave() {
+        clearLinks(); // vide les listes internes pour éviter le bouclage infini
+        JsonManager.save(library.getTracks()); // sauvegarde les titres sur le json
+        buildLinks(); // reconstruit les listes
     }
 }
