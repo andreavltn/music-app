@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="collection.view.TrackFormController"
+      spacing="10"
+      style="-fx-background-color: #1e1e2e; -fx-padding: 20;"
+      prefWidth="360">
+
+    <Label text="Titre" style="-fx-text-fill: #aaa;"/>
+    <TextField fx:id="titleField" style="-fx-background-color: #3a3a4e; -fx-text-fill: white;"/>
+
+    <Label text="Genre" style="-fx-text-fill: #aaa;"/>
+    <TextField fx:id="genreField" style="-fx-background-color: #3a3a4e; -fx-text-fill: white;"/>
+
+    <Label text="Année" style="-fx-text-fill: #aaa;"/>
+    <TextField fx:id="yearField" style="-fx-background-color: #3a3a4e; -fx-text-fill: white;"/>
+
+    <Label text="Durée (secondes)" style="-fx-text-fill: #aaa;"/>
+    <TextField fx:id="durationField" style="-fx-background-color: #3a3a4e; -fx-text-fill: white;"/>
+
+    <Label fx:id="errorLabel" style="-fx-text-fill: #e74c3c;"/>
+
+    <HBox spacing="10">
+        <Button onAction="#onSave" text="Enregistrer"
+                style="-fx-background-color: #27ae60; -fx-text-fill: white;"
+                HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
+        <Button onAction="#onCancel" text="Annuler"
+                style="-fx-background-color: #7f8c8d; -fx-text-fill: white;"
+                HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
+    </HBox>
+</VBox>

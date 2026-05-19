@@ -2,9 +2,11 @@ package collection.view;
 
 import collection.model.Track;
 import collection.viewmodel.LibraryViewModel;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Parent;
 import javafx.scene.control.*;
+import javafx.fxml.FXMLLoader;
+import javafx.stage.Stage;
 
 import java.util.Comparator;
 
@@ -81,6 +83,22 @@ public class MainController {
         }
     }
 
+    // méthode qui met à jour le nombre de titres
+    private void updateCount() {
+        int n = viewModel.getTracks().size();
+        countLabel.setText(n + " titre(s)");
+    }
+
+    @FXML // au clic sur le bouton d'ordre du tri (ascendant/descendant)
+    private void onToggleSortOrder() {
+        isSortingAscending = !isSortingAscending; // inverse l'ordre du tri
+        sortOrderBtn.setText(isSortingAscending ? "↑" : "↓"); // change le texte du bouton
+        String selected = sortComboBox.getValue(); // récupère la nouvelle valeur de tri
+        if (selected != null) {
+            applySortFromCombo(selected); // applique le tri associé à cette valeur
+        }
+    }
+
     // construit le comparateur selon le critère choisi
     private void applySortFromCombo(String sortingChoice) {
         Comparator<Track> comp = switch (sortingChoice) {
@@ -96,33 +114,47 @@ public class MainController {
         viewModel.sort(comp, isSortingAscending); // envoie le tri au modèle
     }
 
-    @FXML // au clic sur le bouton d'ordre du tri (ascendant/descendant)
-    private void onToggleSortOrder() {
-        isSortingAscending = !isSortingAscending; // inverse l'ordre du tri
-        sortOrderBtn.setText(isSortingAscending ? "↑" : "↓"); // change le texte du bouton
-        String selected = sortComboBox.getValue(); // récupère la nouvelle valeur de tri
-        if (selected != null) {
-            applySortFromCombo(selected); // applique le tri associé à cette valeur
+    @FXML private void onAdd() {
+        openForm(null); // ouvre le formulaire d'ajout d'un titre
+    }
+
+    // méthode qui ouvre le formulaire d'ajout/de modification
+    // si il y a une Track en paramètre, c'est une modification du titre
+    // sinon c'est l'ajout d'un nouveau titre
+    private void openForm(Track track) {
+        try {
+
+            // récupère le fichier fxml et instancie le controleur
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/collection/view/track-form.fxml"));
+            Parent root = loader.load();
+
+            // transmet les données pour l'affichage du formulaire
+            TrackFormController controller = loader.getController();
+            controller.init(viewModel, track);
+
+            // crée la scène
+            Stage stage = new Stage(); // nouvelle fenêtre
+            stage.setTitle(track == null ? "Ajouter un titre" : "Modifier un titre"); // choix du titre
+            stage.setScene(new javafx.scene.Scene(root)); // ajoute la scène à la fenêtre
+            stage.showAndWait(); // bloque la fenêtre principale tant que ce n'est pas fini
+
+            updateCount(); // rafraîchit le compteur de titres après fermeture
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
     @FXML
-    private void onAdd() {}
-
-    @FXML
-    private void onStats() {}
-
-    // méthode qui met à jour le nombre de titres
-    private void updateCount() {
-        int n = viewModel.getTracks().size();
-        countLabel.setText(n + " titre(s)");
+    private void onStats() {
+        // A IMPLEMENTER
     }
 
     @FXML
     public void onEdit() {
-        Track selected = trackListView.getSelectionModel().getSelectedItem(); // récupère le titre
-        if (selected != null) {
-            openEditForm(selected); // ouvre le formulaire d'édition
+        Track selectedTrack = trackListView.getSelectionModel().getSelectedItem(); // récupère le titre sélectionné
+        if (selectedTrack != null) {
+            openForm(selectedTrack); // ouvre le formulaire d'édition
+            showDetail(selectedTrack); // met à jour les détails du titre
         }
     }
 
@@ -134,9 +166,5 @@ public class MainController {
             trackListView.getSelectionModel().clearSelection(); // aucun titre n'est sélectionné
             updateCount(); // met à jour le nombre de titres
         }
-    }
-
-    private void openEditForm(Track track) {
-
     }
 }
