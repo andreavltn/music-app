@@ -1,0 +1,66 @@
+/* Fenêtre principale */
+.root {
+    -fx-background-color: #1e1e2e;
+}
+
+/* Barre du haut et du bas */
+.top-bar {
+    -fx-background-color: #2a2a3e;
+    -fx-padding: 10;
+    -fx-spacing: 10;
+}
+
+/* Panneau de détail */
+.detail-panel {
+    -fx-background-color: #2a2a3e;
+    -fx-padding: 16;
+    -fx-spacing: 8;
+}
+
+/* Champs de saisie */
+.input-field {
+    -fx-background-color: #3a3a4e;
+    -fx-text-fill: white;
+}
+
+/* Texte blanc */
+.text-white {
+    -fx-text-fill: white;
+}
+
+/* Texte gris clair */
+.text-muted {
+    -fx-text-fill: #aaa;
+}
+
+/* Texte gris moyen */
+.text-secondary {
+    -fx-text-fill: #ccc;
+}
+
+/* Boutons */
+.btn-green  { -fx-background-color: #27ae60; -fx-text-fill: white; }
+.btn-purple { -fx-background-color: #8e44ad; -fx-text-fill: white; }
+.btn-blue   { -fx-background-color: #2980b9; -fx-text-fill: white; }
+.btn-red    { -fx-background-color: #c0392b; -fx-text-fill: white; }
+.btn-dark   { -fx-background-color: #3a3a4e; -fx-text-fill: white; }
+
+/* Liste des titres */
+.track-list {
+    -fx-background-color: #1e1e2e;
+}
+
+/* Cellules de la liste */
+.list-cell {
+    -fx-background-color: #1e1e2e;
+    -fx-text-fill: white;
+    -fx-border-color: transparent;
+    -fx-padding: 6 10;
+}
+.list-cell:selected { -fx-background-color: #3a3a5e; }
+.list-cell:hover    { -fx-background-color: #2a2a4e; }
+
+/* Message d'erreur */
+.error-label {
+    -fx-text-fill: #e74c3c;
+}

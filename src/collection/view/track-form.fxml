@@ -4,30 +4,31 @@
 
 <VBox xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="collection.view.TrackFormController"
+      stylesheets="@style.css"
       spacing="10"
-      style="-fx-background-color: #1e1e2e; -fx-padding: 20;"
+      styleClass="root"
+      style="-fx-padding: 20;"
       prefWidth="360">
 
-    <Label text="Titre" style="-fx-text-fill: #aaa;"/>
-    <TextField fx:id="titleField" style="-fx-background-color: #3a3a4e; -fx-text-fill: white;"/>
+    <!-- Champs de saisie -->
+    <Label text="Titre"            styleClass="text-muted"/>
+    <TextField fx:id="titleField"    styleClass="input-field"/>
+    <Label text="Genre"            styleClass="text-muted"/>
+    <TextField fx:id="genreField"    styleClass="input-field"/>
+    <Label text="Année"            styleClass="text-muted"/>
+    <TextField fx:id="yearField"     styleClass="input-field"/>
+    <Label text="Durée (secondes)" styleClass="text-muted"/>
+    <TextField fx:id="durationField" styleClass="input-field"/>
 
-    <Label text="Genre" style="-fx-text-fill: #aaa;"/>
-    <TextField fx:id="genreField" style="-fx-background-color: #3a3a4e; -fx-text-fill: white;"/>
+    <!-- Message d'erreur (vide par défaut) -->
+    <Label fx:id="errorLabel" styleClass="error-label"/>
 
-    <Label text="Année" style="-fx-text-fill: #aaa;"/>
-    <TextField fx:id="yearField" style="-fx-background-color: #3a3a4e; -fx-text-fill: white;"/>
-
-    <Label text="Durée (secondes)" style="-fx-text-fill: #aaa;"/>
-    <TextField fx:id="durationField" style="-fx-background-color: #3a3a4e; -fx-text-fill: white;"/>
-
-    <Label fx:id="errorLabel" style="-fx-text-fill: #e74c3c;"/>
-
+    <!-- Boutons de validation -->
     <HBox spacing="10">
-        <Button onAction="#onSave" text="Enregistrer"
-                style="-fx-background-color: #27ae60; -fx-text-fill: white;"
+        <Button onAction="#onSave"   text="Enregistrer" styleClass="btn-green"
                 HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
-        <Button onAction="#onCancel" text="Annuler"
-                style="-fx-background-color: #7f8c8d; -fx-text-fill: white;"
+        <Button onAction="#onCancel" text="Annuler"     styleClass="btn-dark"
                 HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
     </HBox>
+
 </VBox>
