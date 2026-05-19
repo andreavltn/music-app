@@ -72,7 +72,7 @@ public class Track {
         return (a != null) ? a.getName() : "Inconnu";
     }
 
-    // renvoie le nom de l'album ("Inconnu s'il n'y en a pas)
+    // renvoie le nom de l'album ("Inconnu" s'il n'y en a pas)
     public String getAlbumTitle() {
         return (album != null) ? album.getTitle() : "Inconnu";
     }

@@ -8,14 +8,12 @@ public class Album {
 
     private int id;
     private String title;
-    private int year;
     private Artist artist;
     private List<Track> tracks;
 
     public Album(int id, String title, int year) {
         this.id = id;
         this.title = title;
-        this.year = year;
         this.tracks = new ArrayList<>();
     }
 
@@ -28,14 +26,6 @@ public class Album {
     }
     public void setTitle(String title) {
         this.title = title;
-    }
-
-    public int getYear() {
-        return year;
-    }
-
-    public void setYear(int year) {
-        this.year = year;
     }
 
     public Artist getArtist() {
@@ -67,10 +57,5 @@ public class Album {
         if (this == o) return true;
         if (!(o instanceof Album)) return false;
         return id == ((Album) o).id;
-    }
-
-    @Override
-    public String toString() {
-        return title + " (" + year + ")";
     }
 }
