@@ -39,11 +39,13 @@
 }
 
 /* Boutons */
-.btn-green  { -fx-background-color: #27ae60; -fx-text-fill: white; }
+.btn-green { -fx-background-color: green; -fx-text-fill: white; }
 .btn-purple { -fx-background-color: #8e44ad; -fx-text-fill: white; }
-.btn-blue   { -fx-background-color: #2980b9; -fx-text-fill: white; }
-.btn-red    { -fx-background-color: #c0392b; -fx-text-fill: white; }
-.btn-dark   { -fx-background-color: #3a3a4e; -fx-text-fill: white; }
+.btn-blue { -fx-background-color: #2980b9; -fx-text-fill: white; }
+.btn-red { -fx-background-color: red; -fx-text-fill: white; }
+.btn-dark { -fx-background-color: #3a3a4e; -fx-text-fill: white; }
+.btn-emerald { -fx-background-color: #10b981; -fx-text-fill: white; }
+.btn-cyan { -fx-background-color: #0e7490; -fx-text-fill: white;}
 
 /* Liste des titres */
 .track-list {

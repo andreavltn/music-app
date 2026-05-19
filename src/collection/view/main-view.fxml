@@ -26,8 +26,7 @@
 
          <!-- Composants de tri à droite -->
          <Label styleClass="text-white" text="Trier par :"/>
-         <ComboBox fx:id="sortComboBox" prefHeight="26.0" prefWidth="102.0"
-                   styleClass="input-field"/>
+         <ComboBox fx:id="sortComboBox" prefHeight="26.0" prefWidth="102.0" styleClass="input-field"/>
          <Button fx:id="sortOrderBtn" onAction="#onToggleSortOrder"
                  prefHeight="26.0" prefWidth="30.0"
                  styleClass="btn-dark" text="↑"/>
@@ -39,24 +38,24 @@
       <HBox>
 
          <!-- Liste des titres -->
-         <ListView fx:id="trackListView" styleClass="track-list" HBox.hgrow="ALWAYS"/>
+         <ListView fx:id="trackListView" styleClass="track-list" HBox.hgrow="NEVER"/>
 
          <!-- Panneau des détails -->
-         <VBox prefWidth="250" styleClass="detail-panel">
+         <VBox prefWidth="250" minWidth="250" styleClass="detail-panel" HBox.hgrow="NEVER">
             <Label text="Détails" styleClass="text-muted"/>
-            <Label fx:id="detailTitle"    styleClass="text-white" style="-fx-font-weight: bold; -fx-font-size: 14; -fx-wrap-text: true;"/>
-            <Label fx:id="detailArtist"   styleClass="text-secondary" style="-fx-wrap-text: true;"/>
-            <Label fx:id="detailAlbum"    styleClass="text-secondary" style="-fx-wrap-text: true;"/>
-            <Label fx:id="detailGenre"    styleClass="text-muted"/>
-            <Label fx:id="detailYear"     styleClass="text-muted"/>
+            <Label fx:id="detailTitle" styleClass="text-white" style="-fx-font-weight: bold; -fx-font-size: 14; -fx-wrap-text: true;"/>
+            <Label fx:id="detailArtist" styleClass="text-secondary" style="-fx-wrap-text: true;"/>
+            <Label fx:id="detailAlbum" styleClass="text-secondary" style="-fx-wrap-text: true;"/>
+            <Label fx:id="detailGenre" styleClass="text-muted"/>
+            <Label fx:id="detailYear" styleClass="text-muted"/>
             <Label fx:id="detailDuration" styleClass="text-muted"/>
 
             <!-- Région qui pousse tout ce qui suit vers le bas -->
             <Region VBox.vgrow="ALWAYS"/>
 
             <!-- Boutons Modifier et Supprimer -->
-            <Button onAction="#onEdit"   text="Modifier"  styleClass="btn-blue" maxWidth="Infinity"/>
-            <Button onAction="#onDelete" text="Supprimer" styleClass="btn-red"  maxWidth="Infinity"/>
+            <Button onAction="#onEdit" text="Modifier" styleClass="btn-blue" maxWidth="Infinity"/>
+            <Button onAction="#onDelete" text="Supprimer" styleClass="btn-red" maxWidth="Infinity"/>
          </VBox>
       </HBox>
    </center>
@@ -65,9 +64,11 @@
    <bottom>
       <HBox styleClass="top-bar" spacing="10">
 
-         <!-- Boutons Ajouter et Statistiques -->
-         <Button onAction="#onAdd"   styleClass="btn-green"  text="Ajouter un titre"/>
+         <!-- Boutons -->
+         <Button onAction="#onAdd"   styleClass="btn-green" text="Ajouter un titre"/>
          <Button onAction="#onStats" styleClass="btn-purple" text="Accéder aux statistiques"/>
+         <Button onAction="#onImport" styleClass="btn-emerald" text="Importer"/>
+         <Button onAction="#onExport" styleClass="btn-cyan" text="Exporter"/>
 
          <!-- Nombre de titres -->
          <Label fx:id="countLabel"  styleClass="text-muted"/>
