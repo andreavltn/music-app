@@ -200,7 +200,7 @@ public class LibraryViewModel {
             }
             tracksToExport.add(cloneTrack); // ajoute le titre à la liste d'exportation
         }
-        return tracksToExport; // renvoie la liste propre
+        return tracksToExport; // renvoie la liste d'exportation propre avec listes vides
     }
 
     // lie un titre à un artiste et un album

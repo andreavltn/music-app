@@ -24,6 +24,13 @@
     <Label text="Durée (secondes)" styleClass="text-muted"/>
     <TextField fx:id="durationField" styleClass="input-field"/>
 
+    <!-- Fichier mp3 -->
+    <Label text="Fichier MP3" styleClass="text-muted"/>
+    <HBox spacing="8">
+        <TextField fx:id="filePathField" styleClass="input-field" editable="false" HBox.hgrow="ALWAYS"/>
+        <Button onAction="#onChooseFile" text="Parcourir" styleClass="btn-dark"/>
+    </HBox>
+
     <!-- Message d'erreur (vide par défaut) -->
     <Label fx:id="errorLabel" styleClass="error-label"/>
 

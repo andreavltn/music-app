@@ -9,6 +9,7 @@
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
+<?import javafx.scene.control.ProgressBar?>
 <BorderPane stylesheets="@style.css" xmlns="http://javafx.com/javafx/26"
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="collection.view.MainController">
@@ -35,15 +36,17 @@
 
    <!-- CENTRE (liste des titres + détails du titre) -->
    <center>
-      <HBox>
+      <HBox prefWidth="Infinity">
 
          <!-- Liste des titres -->
-         <ListView fx:id="trackListView" styleClass="track-list" HBox.hgrow="NEVER"/>
+         <ListView fx:id="trackListView" styleClass="track-list" prefWidth="250"
+                   minWidth="250"  HBox.hgrow="NEVER"/>
 
          <!-- Panneau des détails -->
          <VBox prefWidth="250" minWidth="250" styleClass="detail-panel" HBox.hgrow="NEVER">
             <Label text="Détails" styleClass="text-muted"/>
-            <Label fx:id="detailTitle" styleClass="text-white" style="-fx-font-weight: bold; -fx-font-size: 14; -fx-wrap-text: true;"/>
+            <Label fx:id="detailTitle" styleClass="text-white"
+                   style="-fx-font-weight: bold; -fx-font-size: 14; -fx-wrap-text: true;"/>
             <Label fx:id="detailArtist" styleClass="text-secondary" style="-fx-wrap-text: true;"/>
             <Label fx:id="detailAlbum" styleClass="text-secondary" style="-fx-wrap-text: true;"/>
             <Label fx:id="detailGenre" styleClass="text-muted"/>
@@ -56,6 +59,25 @@
             <!-- Boutons Modifier et Supprimer -->
             <Button onAction="#onEdit" text="Modifier" styleClass="btn-blue" maxWidth="Infinity"/>
             <Button onAction="#onDelete" text="Supprimer" styleClass="btn-red" maxWidth="Infinity"/>
+         </VBox>
+
+         <!-- Panneau lecteur MP3 -->
+         <VBox styleClass="detail-panel" maxWidth="Infinity" prefWidth="9999" HBox.hgrow="ALWAYS" spacing="16">
+            <Label text="Lecteur" styleClass="text-muted"/>
+            <Label fx:id="playerTitle" styleClass="text-white"
+                   style="-fx-font-size: 14; -fx-font-weight: bold; -fx-wrap-text: true;"/>
+            <Label fx:id="playerArtist" styleClass="text-secondary"/>
+
+            <!-- Région qui pousse tout ce qui suit vers le bas -->
+            <Region VBox.vgrow="ALWAYS"/>
+
+            <ProgressBar fx:id="progressBar" prefWidth="Infinity" maxWidth="Infinity" progress="0"/>
+            <Label fx:id="timeLabel" styleClass="text-muted" text="0:00 / 0:00"/>
+
+            <HBox alignment="CENTER" spacing="10">
+               <Button fx:id="playBtn" onAction="#onPlayOrPause" text="▶" styleClass="btn-dark" prefWidth="40"/>
+               <Button fx:id="stopBtn" onAction="#onStop" text="■" styleClass="btn-dark" prefWidth="40"/>
+            </HBox>
          </VBox>
       </HBox>
    </center>

@@ -7,11 +7,13 @@ import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
 import javafx.stage.FileChooser;
 import javafx.stage.Window;
+import javafx.util.Duration;
 
-import java.nio.file.Path;
 import java.util.Comparator;
 import java.io.File;
 import java.util.List;
@@ -25,7 +27,7 @@ public class MainController {
     @FXML private ComboBox<String> sortComboBox; // liste déroulante de choix du tri
     @FXML private Button sortOrderBtn; // bouton d'ordre du tri
 
-    // récupère labels des détails du titre
+    // récupère les composants des détails du titre
     @FXML private Label detailTitle;
     @FXML private Label detailArtist;
     @FXML private Label detailAlbum;
@@ -33,8 +35,17 @@ public class MainController {
     @FXML private Label detailYear;
     @FXML private Label detailDuration;
 
+    // récupère les composants du lecteur mp3
+    @FXML private Label playerTitle; // nom du titre
+    @FXML private Label playerArtist; // nom de l'artiste
+    @FXML private Button playBtn; // bouton play
+    @FXML private Button stopBtn; // bouton stop
+    @FXML private ProgressBar progressBar; // barre de progression
+    @FXML private Label timeLabel; // temps du lecteur
+
     private LibraryViewModel viewModel;
     private boolean isSortingAscending = true; // sens du tri (ascendant/descendant)
+    private MediaPlayer mediaPlayer; // lecteur mp3
 
     @FXML // appelé automatiquement après chargement de l'affichage
     public void initialize() {
@@ -70,22 +81,39 @@ public class MainController {
     // affiche les détails d'un titre sur le panneau à droite
     private void showDetail(Track t) {
 
+        stopPlayer(); // arrête la lecture du titre (si elle était en cours)
+
         // si aucun titre sélectionné
         if (t == null) {
+            // détails
             detailTitle.setText("");
             detailArtist.setText("");
             detailAlbum.setText("");
             detailGenre.setText("");
             detailYear.setText("");
             detailDuration.setText("");
+
+            // lecteur mp3
+            playerTitle.setText("");
+            playerArtist.setText("");
         } else {
             // sinon affiche ses informations
+
+            // détails
             detailTitle.setText(t.getTitle());
             detailArtist.setText("Artiste : " + t.getArtistName());
             detailAlbum.setText("Album : " + t.getAlbumTitle());
             detailGenre.setText("Genre : " + t.getGenre());
             detailYear.setText("Année : " + t.getYear());
             detailDuration.setText("Durée : " + t.getFormattedDuration());
+
+            // lecteur mp3
+            playerTitle.setText(t.getTitle());
+            playerArtist.setText(t.getArtistName());
+
+            // boutons activés si il y a un mp3 pour le titre
+            playBtn.setDisable(!t.hasFile());
+            stopBtn.setDisable(!t.hasFile());
         }
     }
 
@@ -213,7 +241,8 @@ public class MainController {
         fileChooser.setInitialFileName("library.json");  // nom initial proposé à l'utilisateur
 
         // seule l'extension .json est autorisée
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Fichiers JSON", "*.json"));
+        fileChooser.getExtensionFilters().add(
+                new FileChooser.ExtensionFilter("Fichiers JSON", "*.json"));
 
         Window mainWindow = trackListView.getScene().getWindow(); // remonte à la fenêtre principale
         File file = fileChooser.showSaveDialog(mainWindow); // crée le chemin
@@ -230,4 +259,98 @@ public class MainController {
         alert.setContentText("Librairie exportée avec succès!"); // texte au centre
         alert.showAndWait(); // affiche l'alerte et attend confirmation
     }
+
+    @FXML // au clic sur le bouton play/pause
+    private void onPlayOrPause() {
+
+        // si on vient de lancer le titre pour la première fois
+        if (mediaPlayer == null) { // (le lecteur média n'existe pas encore)
+
+            // récupère le titre sélectionné
+            Track selected = trackListView.getSelectionModel().getSelectedItem();
+
+            // si il est nul ou qu'il n'a pas de fichier, stop
+            if (selected == null || !selected.hasFile()) return;
+
+            // récupère le fichier mp3 du titre
+            File file = new File(selected.getFilePath());
+
+            // si il n'existe pas, affiche un message d'erreur + stop
+            if (!file.exists()) {
+                timeLabel.setText("Fichier introuvable");
+                return;
+            }
+
+            // convertit le mp3 en URI pour le media player
+            Media media = new Media(file.toURI().toString());
+            mediaPlayer = new MediaPlayer(media);
+
+            // à la progression du temps sur le titre
+            mediaPlayer.currentTimeProperty().addListener((obs, oldTime, newTime) -> {
+                if (mediaPlayer == null) return; // si le media est nul, stop (sécurité)
+
+                Duration total = mediaPlayer.getTotalDuration(); // stocke la durée totale
+
+                // si il reste du temps
+                if (total != null && total.greaterThan(Duration.ZERO)) {
+
+                    // calcule la nouvelle progression et met à jour la barre
+                    double progression = newTime.toSeconds() / total.toSeconds();
+                    progressBar.setProgress(progression);
+
+                    // met à jour le temps écoulé sur le titre
+                    timeLabel.setText(formatTime(newTime) + " / " + formatTime(total));
+                }
+            });
+
+            // quand le morceau se termine
+            mediaPlayer.setOnEndOfMedia(() -> {
+                playBtn.setText("▶"); // met à jour le texte du bouton
+                progressBar.setProgress(0); // remet la barre de progression à 0%
+                mediaPlayer.dispose(); // libère les ressources du lecteur
+                mediaPlayer = null; // supprime le lecteur
+            });
+
+            mediaPlayer.play(); // joue le titre
+            playBtn.setText("⏸"); // met à jour le texte du bouton
+
+        }
+
+        // sinon si le titre était en train de jouer
+        else if (mediaPlayer.getStatus() == MediaPlayer.Status.PLAYING) {
+            mediaPlayer.pause(); // met le lecteur en pause
+            playBtn.setText("▶"); // met à jour le texte du bouton
+        }
+
+        // sinon on relance le titre après une pause
+        else {
+            mediaPlayer.play(); // joue le titre
+            playBtn.setText("⏸"); // met à jour le texte du bouton
+        }
+    }
+
+    @FXML // au clic sur le bouton stop (le carré)
+    private void onStop() {
+        stopPlayer();
+    }
+
+    private void stopPlayer() {
+        // si le lecteur média existe
+        if (mediaPlayer != null) {
+            mediaPlayer.stop(); // stoppe le lecteur
+            mediaPlayer.dispose(); // libère les ressources du lecteur
+            mediaPlayer = null; // supprime le lecteur
+        }
+        playBtn.setText("▶"); // met à jour le texte du bouton
+        progressBar.setProgress(0); // remet la barre à 0
+        timeLabel.setText("0:00 / 0:00"); // remet le temps à 0
+    }
+
+    // renvoie le temps formaté à partir d'une durée
+    private String formatTime(Duration d) {
+        int minutes = (int) d.toMinutes(); // récupère les minutes
+        int seconds = (int) (d.toSeconds() % 60); // récupère les secondes
+        return String.format("%d:%02d", minutes, seconds); // renvoie le texte formaté
+    }
+
 }

@@ -9,6 +9,7 @@ public class Track {
     private int year;
     private int duration;
     private Album album;
+    private String filePath;
 
     public Track(int id, String title, String genre, int year, int duration) {
         this.id = id;
@@ -59,6 +60,19 @@ public class Track {
 
     public void setAlbum(Album album) {
         this.album = album;
+    }
+
+    public String getFilePath() {
+        return filePath;
+    }
+
+    public void setFilePath(String filePath) {
+        this.filePath = filePath;
+    }
+
+    // renvoie true si le titre à un fichier mp3 associé
+    public boolean hasFile() {
+        return (filePath != null && !filePath.isBlank());
     }
 
     // remonte à l'artiste via l'album (null si pas dans un album)
