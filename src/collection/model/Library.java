@@ -86,11 +86,6 @@ public class Library {
         return max+1;
     }
 
-    // récupère les statistiques des titres
-    public Stats getStats() {
-        return new Stats(tracks);
-    }
-
     // relie un titre à un artiste et un album
     public void linkTrackToArtistAndAlbum(Track track, String artistName, String albumTitle) {
 

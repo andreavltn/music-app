@@ -5,9 +5,12 @@ import collection.viewmodel.LibraryViewModel;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.Window;
+import javafx.util.Duration;
 
 import java.io.File;
 import java.io.IOException;
@@ -78,6 +81,22 @@ public class TrackFormController {
         if (selected != null) { // si il existe
             String path = selected.getAbsolutePath(); // récupère le chemin absolu du fichier
             filePathField.setText(path); // affiche le chemin absolu du fichier
+
+            // ici on va créer un lecteur media temporaire pour récupérer
+            // la durée totale du mp3 associée au titre et l'afficher
+            // ensuite on le supprime car on n'en a plus besoin
+
+            // convertit le mp3 en URI puis crée un lecteur média temporaire
+            Media media = new Media(selected.toURI().toString());
+            MediaPlayer tempPlayer = new MediaPlayer(media);
+
+            // dès qu'il est prêt
+            tempPlayer.setOnReady(() -> {
+                // récupère la durée totale et met à jour le champ durée
+                Duration total = tempPlayer.getTotalDuration();
+                durationField.setText(String.valueOf((int) total.toSeconds()));
+                tempPlayer.dispose(); // libère les ressources du lecteur
+            });
         }
     }
 

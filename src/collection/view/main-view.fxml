@@ -16,7 +16,7 @@
 
    <!-- MENU EN HAUT (recherche et filtre) -->
    <top>
-      <HBox styleClass="top-bar">
+      <HBox styleClass="menu-bar">
 
          <!-- Champ de recherche à gauche -->
          <TextField fx:id="searchField" prefHeight="26.0" prefWidth="227.0"
@@ -84,11 +84,10 @@
 
    <!-- MENU EN BAS (boutons) -->
    <bottom>
-      <HBox styleClass="top-bar" spacing="10">
+      <HBox styleClass="menu-bar" spacing="10">
 
          <!-- Boutons -->
          <Button onAction="#onAdd"   styleClass="btn-green" text="Ajouter un titre"/>
-         <Button onAction="#onStats" styleClass="btn-purple" text="Accéder aux statistiques"/>
          <Button onAction="#onImport" styleClass="btn-emerald" text="Importer"/>
          <Button onAction="#onExport" styleClass="btn-cyan" text="Exporter"/>
 

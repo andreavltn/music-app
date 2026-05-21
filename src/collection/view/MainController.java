@@ -111,9 +111,45 @@ public class MainController {
             playerTitle.setText(t.getTitle());
             playerArtist.setText(t.getArtistName());
 
-            // boutons activés si il y a un mp3 pour le titre
-            playBtn.setDisable(!t.hasFile());
-            stopBtn.setDisable(!t.hasFile());
+            // si le titre a un mp3
+            if (t.hasFile()) {
+
+                // active les boutons
+                playBtn.setDisable(false);
+                stopBtn.setDisable(false);
+
+                File file = new File(t.getFilePath()); // récupère le fichier lié
+                if (file.exists()) { // si il existe
+
+                    // ici on va créer un lecteur media temporaire pour récupérer
+                    // la durée totale du mp3 associée au titre et l'afficher
+                    // ensuite on le supprime car on n'en a plus besoin
+
+                    // convertit le mp3 en URI et crée un lecteur média temporaire
+                    Media media = new Media(file.toURI().toString());
+                    MediaPlayer tempPlayer = new MediaPlayer(media);
+
+                    // dès que le lecteur est prêt
+                    tempPlayer.setOnReady(() -> {
+                        // récupère la durée totale du titre et l'affiche
+                        Duration total = tempPlayer.getTotalDuration();
+                        timeLabel.setText("0:00 / " + formatTime(total));
+                        tempPlayer.dispose(); // libère les ressources du lecteur
+                    });
+
+                } else { // sinon le fichier n'existe pas
+                    timeLabel.setText("Fichier introuvable"); // message erreur
+                }
+            }
+
+            // sinon le titre n'a pas de mp3 associé
+            else { // sinon la fichier
+
+                // désactive les boutons
+                playBtn.setDisable(true);
+                stopBtn.setDisable(true);
+                timeLabel.setText("");
+            }
         }
     }
 
@@ -177,11 +213,6 @@ public class MainController {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    @FXML // au clic sur le bouton "Accéder aux statistiques"
-    private void onStats() {
-        // A IMPLEMENTER
     }
 
     @FXML // au clic sur le bouton "Modifier"
@@ -285,6 +316,13 @@ public class MainController {
             Media media = new Media(file.toURI().toString());
             mediaPlayer = new MediaPlayer(media);
 
+            // dès que le lecteur est prêt
+            mediaPlayer.setOnReady(() -> {
+                // récupère la durée totale du titre et l'affiche
+                Duration total = mediaPlayer.getTotalDuration();
+                timeLabel.setText("0:00 / " + formatTime(total));
+            });
+
             // à la progression du temps sur le titre
             mediaPlayer.currentTimeProperty().addListener((obs, oldTime, newTime) -> {
                 if (mediaPlayer == null) return; // si le media est nul, stop (sécurité)
@@ -337,13 +375,14 @@ public class MainController {
     private void stopPlayer() {
         // si le lecteur média existe
         if (mediaPlayer != null) {
+            Duration total = mediaPlayer.getTotalDuration(); // récupère la durée totale du titre
             mediaPlayer.stop(); // stoppe le lecteur
             mediaPlayer.dispose(); // libère les ressources du lecteur
             mediaPlayer = null; // supprime le lecteur
+            playBtn.setText("▶"); // met à jour le texte du bouton
+            progressBar.setProgress(0); // remet la barre à 0
+            timeLabel.setText("0:00 / " + formatTime(total)); // remet le temps à 0
         }
-        playBtn.setText("▶"); // met à jour le texte du bouton
-        progressBar.setProgress(0); // remet la barre à 0
-        timeLabel.setText("0:00 / 0:00"); // remet le temps à 0
     }
 
     // renvoie le temps formaté à partir d'une durée
