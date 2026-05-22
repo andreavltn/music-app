@@ -11,6 +11,7 @@ public class Track {
     private int year;
     private int duration;
     private String filePath;
+    private String imagePath;
 
     public Track(int id, String title, String artistName, String albumTitle, String genre, int year, int duration) {
         this.id = id;
@@ -77,13 +78,26 @@ public class Track {
         return filePath;
     }
 
-    public void setFilePath(String filePath) {
+    public void setMp3Path(String filePath) {
         this.filePath = filePath;
     }
 
     // renvoie true si le titre à un fichier mp3 associé
     public boolean hasFile() {
         return (filePath != null && !filePath.isBlank());
+    }
+
+    public String getImagePath() {
+        return imagePath;
+    }
+
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath;
+    }
+
+    // renvoie true si le titre à une image associée
+    public boolean hasImage() {
+        return (imagePath != null && !imagePath.isBlank());
     }
 
     // renvoie la durée du titre, formatée en (minutes:secondes)

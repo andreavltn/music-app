@@ -7,6 +7,8 @@ import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
@@ -38,6 +40,7 @@ public class MainController {
     // récupère les composants du lecteur mp3
     @FXML private Label playerTitle; // nom du titre
     @FXML private Label playerArtist; // nom de l'artiste
+    @FXML private ImageView playerImage; // l'image de couverture
     @FXML private Button playBtn; // bouton play
     @FXML private Button stopBtn; // bouton stop
     @FXML private ProgressBar progressBar; // barre de progression
@@ -143,12 +146,32 @@ public class MainController {
             }
 
             // sinon le titre n'a pas de mp3 associé
-            else { // sinon la fichier
+            else {
 
                 // désactive les boutons
                 playBtn.setDisable(true);
                 stopBtn.setDisable(true);
                 timeLabel.setText("");
+            }
+
+            ///////////////////////////////////////////////////////////////
+
+            // si le titre a une image
+            if (t.hasImage()) {
+
+                // récupère le fichier de l'image
+                File imgFile = new File(t.getImagePath());
+
+                // si elle existe
+                if (imgFile.exists()) {
+                    Image image = new Image(imgFile.toURI().toString()); // récupère l'image
+                    playerImage.setImage(image); // l'affiche
+                }
+            }
+
+            // sinon pas d'image
+            else {
+                playerImage.setImage(null);
             }
         }
     }

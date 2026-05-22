@@ -31,6 +31,13 @@
         <Button onAction="#onChooseFile" text="Parcourir" styleClass="btn-dark"/>
     </HBox>
 
+    <!-- Image -->
+    <Label text="Image" styleClass="text-muted"/>
+    <HBox spacing="8">
+        <TextField fx:id="imagePathField" styleClass="input-field" editable="false" HBox.hgrow="ALWAYS"/>
+        <Button onAction="#onChooseImage" text="Parcourir" styleClass="btn-dark"/>
+    </HBox>
+
     <!-- Message d'erreur (vide par défaut) -->
     <Label fx:id="errorLabel" styleClass="error-label"/>
 

@@ -54,6 +54,12 @@
     -fx-background-color: #1e1e2e;
 }
 
+.track-list .scroll-bar:horizontal {
+    -fx-pref-height: 0;
+    -fx-max-height: 0;
+    -fx-opacity: 0;
+}
+
 /* Cellules de la liste */
 .list-cell {
     -fx-background-color: #1e1e2e;

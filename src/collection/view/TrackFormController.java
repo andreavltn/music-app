@@ -2,7 +2,6 @@ package collection.view;
 
 import collection.model.Track;
 import collection.viewmodel.LibraryViewModel;
-import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -30,6 +29,7 @@ public class TrackFormController {
     @FXML private TextField yearField;
     @FXML private TextField durationField;
     @FXML private TextField filePathField;
+    @FXML private TextField imagePathField;
     @FXML private Label errorLabel;
 
     private LibraryViewModel viewModel;
@@ -70,8 +70,14 @@ public class TrackFormController {
             yearField.setText(String.valueOf(track.getYear()));
             durationField.setText(String.valueOf(track.getDuration()));
 
-            if (track.hasFile()) { // si le titre a un fichier mp3
+            // si le titre a un fichier mp3
+            if (track.hasFile()) {
                 filePathField.setText(track.getFilePath()); // affiche son chemin
+            }
+
+            // si le titre a une image
+            if (track.hasImage()) {
+                imagePathField.setText(track.getImagePath()); // affiche son chemin
             }
         }
 
@@ -177,6 +183,24 @@ public class TrackFormController {
         }
     }
 
+    @FXML // au clic sur "Image"
+    private void onChooseImage() {
+
+        FileChooser fileChooser = new FileChooser(); // crée un sélecteur de fichier
+        fileChooser.setTitle("Choisir une image"); // titre de la fenêtre
+        fileChooser.getExtensionFilters().add(
+                new FileChooser.ExtensionFilter("Images", "*.png", "*.jpg", "*.jpeg") // seulement les images
+        );
+
+        Window window = titleField.getScene().getWindow(); // récupère la fenêtre
+        File selected = fileChooser.showOpenDialog(window); // ouvre le sélecteur de fichier
+        // et récupère le fichier choisi
+
+        if (selected != null) {
+            imagePathField.setText(selected.getAbsolutePath()); // met à jour le chemin
+        }
+    }
+
     @FXML // à l'enregistrement du formulaire (bouton "Enregistrer")
     private void onSave() {
 
@@ -186,6 +210,7 @@ public class TrackFormController {
         String album = albumComboBox.getEditor().getText().trim();
         String genre = genreField.getText().trim();
         String selectedPath = filePathField.getText().trim();
+        String selectedImage = imagePathField.getText().trim();
 
         // si le titre est vide
         if (title.isBlank()) {
@@ -219,9 +244,16 @@ public class TrackFormController {
 
             // si un fichier mp3 a été choisi
             if (!selectedPath.isBlank()) {
-                String path = copyMp3(selectedPath); // copie le fichier choisi dans music
+                String path = copyFile(selectedPath, "music"); // copie le fichier choisi dans music/
                 if (path == null) return; // si pas de chemin, stoppe la fonction (echec copie)
-                track.setFilePath(path); // sinon met à jour le chemin du titre
+                track.setMp3Path(path); // sinon met à jour le chemin du titre
+            }
+
+            // si une image a été choisie
+            if (!selectedImage.isBlank()) {
+                String path = copyFile(selectedPath, "images"); // copie le fichier choisi dans images/
+                if (path == null) return; // si pas de chemin, stoppe la fonction (echec copie)
+                track.setImagePath(path); // sinon met à jour le chemin de l'image
             }
 
             viewModel.addTrack(track); // ajout à la librairie
@@ -238,9 +270,16 @@ public class TrackFormController {
 
             // si un fichier mp3 a été choisi
             if (!selectedPath.isBlank()) {
-                String path = copyMp3(selectedPath); // copie le fichier choisi dans music
+                String path = copyFile(selectedPath, "music"); // copie le fichier choisi dans music
                 if (path == null) return; // si pas de chemin, stoppe la fonction (echec copie)
-                track.setFilePath(path); // sinon met à jour le chemin du titre
+                track.setMp3Path(path); // sinon met à jour le chemin du titre
+            }
+
+            // si une image a été choisie
+            if (!selectedImage.isBlank()) {
+                String path = copyFile(selectedPath, "images"); // copie le fichier choisi dans images/
+                if (path == null) return; // si pas de chemin, stoppe la fonction (echec copie)
+                track.setImagePath(path); // sinon met à jour le chemin de l'image
             }
 
             // met à jour le titre dans la librairie
@@ -250,14 +289,14 @@ public class TrackFormController {
         close(); // ferme le formulaire
     }
 
-    // recopie un fichier mp3 choisi dans le dossier "music/", et renvoie son chemin d'accès
-    private String copyMp3(String selectedPath) {
+    // recopie un fichier choisi dans un dossier
+    private String copyFile(String selectedPath, String folder) {
         File source = new File(selectedPath); // récupère le fichier source
-        File dest = new File("music/" + source.getName()); // crée le fichier destination
+        File dest = new File(folder + "/" + source.getName()); // crée le fichier destination
         try {
             // recopie le contenu du fichier source dans le fichier destination
             Files.copy(source.toPath(), dest.toPath(), StandardCopyOption.REPLACE_EXISTING);
-            return "music/" + source.getName(); // renvoie le chemin d'accès du fichier dest
+            return folder + "/" + source.getName(); // renvoie le chemin d'accès du fichier dest
         } catch (IOException e) {
             errorLabel.setText("Erreur lors de la copie du fichier."); // erreur
             return null; // pas de chemin d'accès

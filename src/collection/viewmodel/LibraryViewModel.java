@@ -162,17 +162,20 @@ public class LibraryViewModel {
     // remplit la librairie de titres (pour tester)
     private void loadTestData() {
 
-        // 3 titres avec musique libre de droits
+        // 3 titres avec musique et image libres de droit
         Track t1 = new Track(1, "SampleTrack1", "Artist1", "Album1", "Genre1", 1, 148);
-        t1.setFilePath("music/sample1.mp3");
+        t1.setMp3Path("music/sample1.mp3");
+        t1.setImagePath("images/sample1.jpg");
         library.add(t1);
 
         Track t2 = new Track(2, "SampleTrack2", "Artist2", "Album2", "Genre1", 2, 69);
-        t2.setFilePath("music/sample2.mp3");
+        t2.setMp3Path("music/sample2.mp3");
+        t2.setImagePath("images/sample2.jpg");
         library.add(t2);
 
         Track t3 = new Track(3, "SampleTrack3", "Artist3", "Album3", "Genre3", 3, 157);
-        t3.setFilePath("music/sample3.mp3");
+        t3.setMp3Path("music/sample3.mp3");
+        t3.setImagePath("images/sample3.jpg");
         library.add(t3);
 
         // le reste pour remplir la librairie

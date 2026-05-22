@@ -8,8 +8,9 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
-
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.control.ProgressBar?>
+
 <BorderPane stylesheets="@style.css" xmlns="http://javafx.com/javafx/26"
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="collection.view.MainController">
@@ -71,9 +72,14 @@
             <!-- Région qui pousse tout ce qui suit vers le bas -->
             <Region VBox.vgrow="ALWAYS"/>
 
+            <!-- Image de couverture -->
+            <ImageView fx:id="playerImage" fitWidth="150" fitHeight="150" preserveRatio="true"/>
+
+            <!-- Barre de progression -->
             <ProgressBar fx:id="progressBar" prefWidth="Infinity" maxWidth="Infinity" progress="0"/>
             <Label fx:id="timeLabel" styleClass="text-muted" text="0:00 / 0:00"/>
 
+            <!-- Boutons play et stop -->
             <HBox alignment="CENTER" spacing="10">
                <Button fx:id="playBtn" onAction="#onPlayOrPause" text="▶" styleClass="btn-dark" prefWidth="40"/>
                <Button fx:id="stopBtn" onAction="#onStop" text="■" styleClass="btn-dark" prefWidth="40"/>
