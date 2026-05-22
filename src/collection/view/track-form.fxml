@@ -11,10 +11,10 @@
       prefWidth="360">
 
     <!-- Champs de saisie -->
-    <Label text="Artiste"          styleClass="text-muted"/>
-    <TextField fx:id="artistField"   styleClass="input-field"/>
-    <Label text="Album"            styleClass="text-muted"/>
-    <TextField fx:id="albumField"    styleClass="input-field"/>
+    <Label text="Artiste" styleClass="text-muted"/>
+    <ComboBox fx:id="artistComboBox" styleClass="input-field" editable="true" maxWidth="Infinity"/>
+    <Label text="Album" styleClass="text-muted"/>
+    <ComboBox fx:id="albumComboBox" styleClass="input-field" editable="true" maxWidth="Infinity"/>
     <Label text="Titre"            styleClass="text-muted"/>
     <TextField fx:id="titleField"    styleClass="input-field"/>
     <Label text="Genre"            styleClass="text-muted"/>

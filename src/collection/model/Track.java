@@ -5,15 +5,18 @@ public class Track {
 
     private int id;
     private String title;
+    private String artistName;
+    private String albumTitle;
     private String genre;
     private int year;
     private int duration;
-    private Album album;
     private String filePath;
 
-    public Track(int id, String title, String genre, int year, int duration) {
+    public Track(int id, String title, String artistName, String albumTitle, String genre, int year, int duration) {
         this.id = id;
         this.title = title;
+        this.artistName = artistName;
+        this.albumTitle = albumTitle;
         this.genre = genre;
         this.year = year;
         this.duration = duration;
@@ -54,12 +57,20 @@ public class Track {
         this.duration = duration;
     }
 
-    public Album getAlbum() {
-        return album;
+    public String getArtistName() {
+        return artistName;
     }
 
-    public void setAlbum(Album album) {
-        this.album = album;
+    public void setArtistName(String artistName) {
+        this.artistName = artistName;
+    }
+
+    public String getAlbumTitle() {
+        return albumTitle;
+    }
+
+    public void setAlbumTitle(String albumTitle) {
+        this.albumTitle = albumTitle;
     }
 
     public String getFilePath() {
@@ -73,22 +84,6 @@ public class Track {
     // renvoie true si le titre à un fichier mp3 associé
     public boolean hasFile() {
         return (filePath != null && !filePath.isBlank());
-    }
-
-    // remonte à l'artiste via l'album (null si pas dans un album)
-    public Artist getArtist() {
-        return (album != null) ? album.getArtist() : null;
-    }
-
-    // renvoie le nom de l'artiste ("Inconnu" s'il n'y en a pas)
-    public String getArtistName() {
-        Artist a = getArtist();
-        return (a != null) ? a.getName() : "Inconnu";
-    }
-
-    // renvoie le nom de l'album ("Inconnu" s'il n'y en a pas)
-    public String getAlbumTitle() {
-        return (album != null) ? album.getTitle() : "Inconnu";
     }
 
     // renvoie la durée du titre, formatée en (minutes:secondes)

@@ -2,6 +2,7 @@ package collection.view;
 
 import collection.model.Track;
 import collection.viewmodel.LibraryViewModel;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -16,12 +17,14 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class TrackFormController {
 
     // récupère les composants de l'interface
-    @FXML private TextField artistField;
-    @FXML private TextField albumField;
+    @FXML private ComboBox<String> artistComboBox;
+    @FXML private ComboBox<String> albumComboBox;
     @FXML private TextField titleField;
     @FXML private TextField genreField;
     @FXML private TextField yearField;
@@ -31,6 +34,9 @@ public class TrackFormController {
 
     private LibraryViewModel viewModel;
     private Track track; // null = ajout, sinon modification
+    private List<String> allArtists; // liste de tous les artistes
+    private int lastFilteredSizeArtist = -1; // outil pour la combobox artiste
+    private int lastFilteredSizeAlbum = -1; // idem pour la combobox album
 
     // méthode qui affiche la formulaire
     public void init(LibraryViewModel vm, Track track) {
@@ -39,12 +45,26 @@ public class TrackFormController {
         this.viewModel = vm;
         this.track = track;
 
+        this.allArtists = viewModel.getDistinctArtistNames(); // récupère la liste des artistes
+        artistComboBox.getItems().setAll(this.allArtists); // remplit la comboBox artiste
+
+        // à chaque frappe sur artiste
+        artistComboBox.getEditor().textProperty().addListener((obs, oldVal, newVal) -> {
+            filterArtists(newVal); // filtre la liste d'artistes
+        });
+
+        // à chaque frappe sur album
+        albumComboBox.getEditor().textProperty().addListener((obs, oldVal, newVal) -> {
+            String currentArtist = artistComboBox.getEditor().getText().trim(); // récupère l'artiste actuel
+            filterAlbums(newVal, currentArtist); // filtre la liste des albums par rapport à l'artiste
+        });
+
         // si c'est une modification
         if (track != null) {
 
             // remplit les champs avec les données existantes
-            artistField.setText(track.getArtistName());
-            albumField.setText(track.getAlbumTitle());
+            artistComboBox.setValue(track.getArtistName());
+            albumComboBox.setValue(track.getAlbumTitle());
             titleField.setText(track.getTitle());
             genreField.setText(track.getGenre());
             yearField.setText(String.valueOf(track.getYear()));
@@ -56,6 +76,63 @@ public class TrackFormController {
         }
 
         // sinon ne fait rien (champs vides)
+    }
+
+    // filtre les artistes selon la saisie et met à jour la comboBox artiste
+    private void filterArtists(String query) {
+
+        // récupère ce qui est saisi, en minuscules
+        String lowerQuery = (query == null) ? "" : query.toLowerCase();
+
+        // crée une liste filtrée
+        List<String> filtered = allArtists.stream()
+                .filter(a -> a.toLowerCase().contains(lowerQuery))
+                .collect(Collectors.toList());
+
+        // applique le filtre sur la comboBox
+        applyFilter(artistComboBox, filtered, lowerQuery, lastFilteredSizeArtist);
+        lastFilteredSizeArtist = Math.max(1, filtered.size()); // met à jour la dernière taille
+    }
+
+    // filtre les albums selon l'artiste saisi + la saisie album en cours, et met à jour la comboBox album
+    private void filterAlbums(String query, String artistQuery) {
+
+        // récupère ce qui est saisi, en minuscules
+        String lowerQuery = query == null ? "" : query.toLowerCase();
+        String lowerArtist = artistQuery == null ? "" : artistQuery.toLowerCase();
+
+        // crée une liste filtrée
+        List<String> filtered = viewModel.getDistinctAlbumTitles().stream()
+                .filter(a -> lowerArtist.isBlank() || viewModel.getAlbumArtist(a).toLowerCase().contains(lowerArtist))
+                .filter(a -> a.toLowerCase().contains(lowerQuery))
+                .collect(Collectors.toList());
+
+        // applique le filtre sur la comboBox
+        applyFilter(albumComboBox, filtered, lowerQuery, lastFilteredSizeAlbum);
+        lastFilteredSizeAlbum = Math.max(1, filtered.size()); // met à jour la dernière taille
+    }
+
+    // méthode utilitaire qui applique le filtre sur une ComboBox
+    private void applyFilter(ComboBox<String> comboBox, List<String> filtered, String lowerQuery, int lastSize) {
+
+        // applique le filtre sur la comboBox
+        comboBox.getItems().setAll(filtered);
+
+        // récupère la taille ajustée et met à jour l'affichage de la comboBox
+        int newSize = Math.max(1, filtered.size());
+        comboBox.setVisibleRowCount(newSize);
+
+        // si il y a au moins un résultat
+        if (!filtered.isEmpty() && !lowerQuery.isBlank()) {
+            // si la taille de la liste des résultats a changé
+            if (newSize != lastSize) {
+                // rafraichit l'affichage de la liste
+                comboBox.hide();
+                comboBox.show();
+            }
+        } else { // sinon cache la liste (pas de résultat correspondant)
+            comboBox.hide();
+        }
     }
 
     // méthode qui ferme la fenêtre du formulaire
@@ -104,9 +181,9 @@ public class TrackFormController {
     private void onSave() {
 
         // récupère et valide les champs
-        String artist = artistField.getText().trim();
-        String album = albumField.getText().trim();
         String title = titleField.getText().trim();
+        String artist = artistComboBox.getEditor().getText().trim();
+        String album = albumComboBox.getEditor().getText().trim();
         String genre = genreField.getText().trim();
         String selectedPath = filePathField.getText().trim();
 
@@ -138,7 +215,7 @@ public class TrackFormController {
         if (this.track == null) {
 
             // crée un nouveau titre avec les données du formulaire
-            Track track = new Track(viewModel.createTrackId(), title, genre, year, duration);
+            Track track = new Track(viewModel.createTrackId(), title, artist, album, genre, year, duration);
 
             // si un fichier mp3 a été choisi
             if (!selectedPath.isBlank()) {
@@ -147,12 +224,13 @@ public class TrackFormController {
                 track.setFilePath(path); // sinon met à jour le chemin du titre
             }
 
-            viewModel.linkTrack(track, artist, album); // lie le titre à l'artiste et l'album
             viewModel.addTrack(track); // ajout à la librairie
 
         } else { // sinon c'est un formulaire de modification
 
             // met à jour les champs du titre en paramètre
+            track.setArtistName(artist);
+            track.setAlbumTitle(album);
             track.setTitle(title);
             track.setGenre(genre);
             track.setYear(year);
@@ -164,9 +242,6 @@ public class TrackFormController {
                 if (path == null) return; // si pas de chemin, stoppe la fonction (echec copie)
                 track.setFilePath(path); // sinon met à jour le chemin du titre
             }
-
-            // lie le titre à l'artiste et l'album
-            viewModel.linkTrack(track, artist, album);
 
             // met à jour le titre dans la librairie
             viewModel.updateTrack(track);
