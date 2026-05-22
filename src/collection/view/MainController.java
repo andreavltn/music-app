@@ -276,14 +276,14 @@ public class MainController {
             List<Track> tracksFromFile = JsonManager.loadFrom(importPath); // récupère les titres du fichier
             viewModel.importTracks(tracksFromFile); // importe les titres dans la librairie
             updateCount(); // met à jour le nombre de titres
-        }
 
-        // alerte de confirmation
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Importation"); // titre de l'alerte
-        alert.setHeaderText(null); // pas de texte en haut
-        alert.setContentText("Librairie importée avec succès!"); // texte au centre
-        alert.showAndWait(); // affiche l'alerte et attend confirmation
+            // alerte de confirmation
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Importation"); // titre de l'alerte
+            alert.setHeaderText(null); // pas de texte en haut
+            alert.setContentText("Librairie importée avec succès!"); // texte au centre
+            alert.showAndWait(); // affiche l'alerte et attend confirmation
+        }
     }
 
     @FXML // au clic sur le bouton "Exporter"
@@ -304,14 +304,14 @@ public class MainController {
             String exportPath = file.getAbsolutePath(); // récupère le chemin absolu du fichier
             List<Track> tracksFromLibrary = viewModel.exportTracks(); // récupère les titres de la librairie
             JsonManager.saveTo(exportPath, tracksFromLibrary); // exporte les titres dans le fichier
-        }
 
-        // alerte de confirmation
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Exportation"); // titre de l'alerte
-        alert.setHeaderText(null); // pas de texte en haut
-        alert.setContentText("Librairie exportée avec succès!"); // texte au centre
-        alert.showAndWait(); // affiche l'alerte et attend confirmation
+            // alerte de confirmation
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Exportation"); // titre de l'alerte
+            alert.setHeaderText(null); // pas de texte en haut
+            alert.setContentText("Librairie exportée avec succès!"); // texte au centre
+            alert.showAndWait(); // affiche l'alerte et attend confirmation
+        }
     }
 
     @FXML // au clic sur le bouton play/pause

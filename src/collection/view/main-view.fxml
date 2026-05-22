@@ -94,13 +94,19 @@
    <bottom>
       <HBox styleClass="menu-bar" spacing="10">
 
-         <!-- Boutons -->
+         <!-- Nombre de titres -->
+         <Label fx:id="countLabel" styleClass="text-muted"/>
+
+         <!-- Région qui pousse tout ce qui suit vers la droite -->
+         <Region HBox.hgrow="ALWAYS"/>
+
+         <!-- Boutons (centrés grace aux deux box autour) -->
          <Button onAction="#onAdd"   styleClass="btn-green" text="Ajouter un titre"/>
          <Button onAction="#onImport" styleClass="btn-emerald" text="Importer"/>
          <Button onAction="#onExport" styleClass="btn-cyan" text="Exporter"/>
 
-         <!-- Nombre de titres -->
-         <Label fx:id="countLabel"  styleClass="text-muted"/>
+         <!-- Région qui pousse tout ce qui suit vers la droite -->
+         <Region HBox.hgrow="ALWAYS"/>
       </HBox>
    </bottom>
 
