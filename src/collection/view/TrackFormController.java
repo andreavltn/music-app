@@ -251,7 +251,7 @@ public class TrackFormController {
 
             // si une image a été choisie
             if (!selectedImage.isBlank()) {
-                String path = copyFile(selectedPath, "images"); // copie le fichier choisi dans images/
+                String path = copyFile(selectedImage, "images"); // copie le fichier choisi dans images/
                 if (path == null) return; // si pas de chemin, stoppe la fonction (echec copie)
                 track.setImagePath(path); // sinon met à jour le chemin de l'image
             }
@@ -277,7 +277,7 @@ public class TrackFormController {
 
             // si une image a été choisie
             if (!selectedImage.isBlank()) {
-                String path = copyFile(selectedPath, "images"); // copie le fichier choisi dans images/
+                String path = copyFile(selectedImage, "images"); // copie le fichier choisi dans images/
                 if (path == null) return; // si pas de chemin, stoppe la fonction (echec copie)
                 track.setImagePath(path); // sinon met à jour le chemin de l'image
             }

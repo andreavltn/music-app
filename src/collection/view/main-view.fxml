@@ -73,7 +73,9 @@
             <Region VBox.vgrow="ALWAYS"/>
 
             <!-- Image de couverture -->
-            <ImageView fx:id="playerImage" fitWidth="150" fitHeight="150" preserveRatio="true"/>
+            <HBox alignment="CENTER" style="-fx-padding: 0 0 12 0;">
+               <ImageView fx:id="playerImage" fitWidth="300" fitHeight="300" preserveRatio="true"/>
+            </HBox>
 
             <!-- Barre de progression -->
             <ProgressBar fx:id="progressBar" prefWidth="Infinity" maxWidth="Infinity" progress="0"/>
