@@ -35,8 +35,6 @@ public class TrackFormController {
     private LibraryViewModel viewModel;
     private Track track; // null = ajout, sinon modification
     private List<String> allArtists; // liste de tous les artistes
-    boolean selectingArtist = false; // outil pour la combobox artist
-    boolean selectingAlbum = false; // idem pour la combobox album
     private int lastFilteredSizeArtist = -1; // outil pour la combobox artist
     private int lastFilteredSizeAlbum = -1; // idem pour la combobox album
 
@@ -52,33 +50,13 @@ public class TrackFormController {
 
         // à chaque changement de texte sur artist
         artistComboBox.getEditor().textProperty().addListener((obs, oldVal, newVal) -> {
-            if(selectingArtist) return; // si c'est une sélection (clic), ne filtre pas
-            filterArtists(newVal); // sinon filtre la liste d'artistes
+            filterArtists(newVal); // filtre la liste d'artistes
         });
 
         // à chaque changement de texte sur album
         albumComboBox.getEditor().textProperty().addListener((obs, oldVal, newVal) -> {
-            if (selectingAlbum) return; // si c'est une sélection (clic), ne filtre pas
-            String currentArtist = artistComboBox.getEditor().getText().trim(); // sinon récupère l'artiste actuel
-            filterAlbums(newVal, currentArtist); // et filtre la liste des albums par rapport à l'artiste
-        });
-
-        // les deux handlers suivants sont pour éviter une IndexOutOfBoundsException
-        // car avant le fix, le clic sur un choix vidait la liste alors que javafx
-        // était encore en train de traiter la sélection
-
-        // au clic sur un choix de la liste artist
-        artistComboBox.setOnAction(e -> {
-            selectingArtist = true; // alors c'est une sélection
-            artistComboBox.hide(); // cache la liste
-            selectingArtist = false; // on a fini de sélectionner
-        });
-
-        // au clic sur un choix de la liste album
-        albumComboBox.setOnAction(e -> {
-            selectingAlbum = true; // alors c'est une sélection
-            albumComboBox.hide(); // cache la liste
-            selectingAlbum = false; // on a fini de sélectionner
+            String currentArtist = artistComboBox.getEditor().getText().trim(); // récupère l'artiste actuel
+            filterAlbums(newVal, currentArtist); // filtre la liste des albums par rapport à l'artiste
         });
 
         // si c'est une modification
@@ -142,9 +120,6 @@ public class TrackFormController {
 
     // méthode utilitaire qui applique le filtre sur une ComboBox
     private void applyFilter(ComboBox<String> comboBox, List<String> filtered, String lowerQuery, int lastSize) {
-
-        // applique le filtre sur la comboBox
-        comboBox.getItems().setAll(filtered);
 
         // récupère la taille ajustée et met à jour l'affichage de la comboBox
         int newSize = Math.max(1, filtered.size());
