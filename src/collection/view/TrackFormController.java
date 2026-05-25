@@ -244,16 +244,12 @@ public class TrackFormController {
 
             // si un fichier mp3 a été choisi
             if (!selectedPath.isBlank()) {
-                String path = copyFile(selectedPath, "music"); // copie le fichier choisi dans music/
-                if (path == null) return; // si pas de chemin, stoppe la fonction (echec copie)
-                track.setMp3Path(path); // sinon met à jour le chemin du titre
+                track.setMp3Path(selectedPath); // met à jour le chemin du titre
             }
 
             // si une image a été choisie
             if (!selectedImage.isBlank()) {
-                String path = copyFile(selectedImage, "images"); // copie le fichier choisi dans images/
-                if (path == null) return; // si pas de chemin, stoppe la fonction (echec copie)
-                track.setImagePath(path); // sinon met à jour le chemin de l'image
+                track.setImagePath(selectedImage); // met à jour le chemin de l'image
             }
 
             viewModel.addTrack(track); // ajout à la librairie
@@ -270,16 +266,16 @@ public class TrackFormController {
 
             // si un fichier mp3 a été choisi
             if (!selectedPath.isBlank()) {
-                String path = copyFile(selectedPath, "music"); // copie le fichier choisi dans music
-                if (path == null) return; // si pas de chemin, stoppe la fonction (echec copie)
-                track.setMp3Path(path); // sinon met à jour le chemin du titre
+                track.setMp3Path(selectedPath); // met à jour le chemin du titre
+            } else {
+                track.setMp3Path(null); // sinon retire le chemin
             }
 
             // si une image a été choisie
             if (!selectedImage.isBlank()) {
-                String path = copyFile(selectedImage, "images"); // copie le fichier choisi dans images/
-                if (path == null) return; // si pas de chemin, stoppe la fonction (echec copie)
-                track.setImagePath(path); // sinon met à jour le chemin de l'image
+                track.setImagePath(selectedImage); // met à jour le chemin de l'image
+            } else {
+                track.setImagePath(null); // sinon retire le chemin
             }
 
             // met à jour le titre dans la librairie
@@ -289,17 +285,21 @@ public class TrackFormController {
         close(); // ferme le formulaire
     }
 
-    // recopie un fichier choisi dans un dossier
-    private String copyFile(String selectedPath, String folder) {
-        File source = new File(selectedPath); // récupère le fichier source
-        File dest = new File(folder + "/" + source.getName()); // crée le fichier destination
-        try {
-            // recopie le contenu du fichier source dans le fichier destination
-            Files.copy(source.toPath(), dest.toPath(), StandardCopyOption.REPLACE_EXISTING);
-            return folder + "/" + source.getName(); // renvoie le chemin d'accès du fichier dest
-        } catch (IOException e) {
-            errorLabel.setText("Erreur lors de la copie du fichier."); // erreur
-            return null; // pas de chemin d'accès
+    @FXML // au clic sur la croix près du choix du mp3
+    private void onClearFile() {
+        // supprime le fichier
+        filePathField.setText("");
+        if (track != null) {
+            track.setMp3Path(null);
+        }
+    }
+
+    @FXML // au clic sur la croix près du choix de l'image
+    private void onClearImage() {
+        // supprime l'image
+        imagePathField.setText("");
+        if (track != null) {
+            track.setImagePath(null);
         }
     }
 

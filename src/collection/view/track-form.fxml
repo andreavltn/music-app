@@ -29,6 +29,7 @@
     <HBox spacing="8">
         <TextField fx:id="filePathField" styleClass="input-field" editable="false" HBox.hgrow="ALWAYS"/>
         <Button onAction="#onChooseFile" text="Parcourir" styleClass="btn-dark"/>
+        <Button onAction="#onClearFile" text="✕" styleClass="btn-red" prefWidth="30"/>
     </HBox>
 
     <!-- Image -->
@@ -36,6 +37,7 @@
     <HBox spacing="8">
         <TextField fx:id="imagePathField" styleClass="input-field" editable="false" HBox.hgrow="ALWAYS"/>
         <Button onAction="#onChooseImage" text="Parcourir" styleClass="btn-dark"/>
+        <Button onAction="#onClearImage" text="✕" styleClass="btn-red" prefWidth="30"/>
     </HBox>
 
     <!-- Message d'erreur (vide par défaut) -->
