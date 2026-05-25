@@ -35,7 +35,9 @@ public class TrackFormController {
     private LibraryViewModel viewModel;
     private Track track; // null = ajout, sinon modification
     private List<String> allArtists; // liste de tous les artistes
-    private int lastFilteredSizeArtist = -1; // outil pour la combobox artiste
+    boolean selectingArtist = false; // outil pour la combobox artist
+    boolean selectingAlbum = false; // idem pour la combobox album
+    private int lastFilteredSizeArtist = -1; // outil pour la combobox artist
     private int lastFilteredSizeAlbum = -1; // idem pour la combobox album
 
     // méthode qui affiche la formulaire
@@ -48,15 +50,35 @@ public class TrackFormController {
         this.allArtists = viewModel.getDistinctArtistNames(); // récupère la liste des artistes
         artistComboBox.getItems().setAll(this.allArtists); // remplit la comboBox artiste
 
-        // à chaque frappe sur artiste
+        // à chaque changement de texte sur artist
         artistComboBox.getEditor().textProperty().addListener((obs, oldVal, newVal) -> {
-            filterArtists(newVal); // filtre la liste d'artistes
+            if(selectingArtist) return; // si c'est une sélection (clic), ne filtre pas
+            filterArtists(newVal); // sinon filtre la liste d'artistes
         });
 
-        // à chaque frappe sur album
+        // à chaque changement de texte sur album
         albumComboBox.getEditor().textProperty().addListener((obs, oldVal, newVal) -> {
-            String currentArtist = artistComboBox.getEditor().getText().trim(); // récupère l'artiste actuel
-            filterAlbums(newVal, currentArtist); // filtre la liste des albums par rapport à l'artiste
+            if (selectingAlbum) return; // si c'est une sélection (clic), ne filtre pas
+            String currentArtist = artistComboBox.getEditor().getText().trim(); // sinon récupère l'artiste actuel
+            filterAlbums(newVal, currentArtist); // et filtre la liste des albums par rapport à l'artiste
+        });
+
+        // les deux handlers suivants sont pour éviter une IndexOutOfBoundsException
+        // car avant le fix, le clic sur un choix vidait la liste alors que javafx
+        // était encore en train de traiter la sélection
+
+        // au clic sur un choix de la liste artist
+        artistComboBox.setOnAction(e -> {
+            selectingArtist = true; // alors c'est une sélection
+            artistComboBox.hide(); // cache la liste
+            selectingArtist = false; // on a fini de sélectionner
+        });
+
+        // au clic sur un choix de la liste album
+        albumComboBox.setOnAction(e -> {
+            selectingAlbum = true; // alors c'est une sélection
+            albumComboBox.hide(); // cache la liste
+            selectingAlbum = false; // on a fini de sélectionner
         });
 
         // si c'est une modification

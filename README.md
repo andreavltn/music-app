@@ -53,10 +53,11 @@ L'application suit le modèle **MVVM** :
 - Gson (sérialisation JSON)
 - javafx.scene.media (lecture MP3)
 
-## Comment lancer l'application?
+## Comment utiliser l'application?
 
 Dans le terminal, depuis le répertoire contenant l'application, exécuter la commande suivante :
 - `java --module-path [JAVAFX] --add-modules javafx.controls,javafx.fxml,javafx.media -jar collection-fxml.jar`
 - où `[JAVAFX]` est le chemin absolu du répertoire "lib" de JavaFX sur la machine utilisée
 - /!\ ne pas oublier le module javafx.media dans la commande (nécessaire pour utiliser le lecteur mp3)
 - la commande ci-dessus fonctionne pour Windows, éventuellement utiliser des \ au lieu des / pour les chemins d'accès sur Linux
+- si un library.json est déjà présent dans le répertoire de l'app, elle s'en servira directement comme librairie
