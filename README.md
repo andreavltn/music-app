@@ -40,10 +40,11 @@ est déplacé, l'application affichera le message "fichier introuvable".
 
 L'application suit le modèle **MVVM** :
 
-- `collection.model` : `Track`, `Library`
-- `collection.viewmodel` : `LibraryViewModel`
-- `collection.view` : `MainController`, `TrackFormController` (+ fichiers FXML)
-- `collection.util` : `JsonManager` (sérialisation / désérialisation JSON)
+- `App.java` : point d'entrée
+- `collection.model` : `Track.java`, `Library.java`
+- `collection.viewmodel` : `LibraryViewModel.java`
+- `collection.view` : `MainController.java`, `TrackFormController.java` (+ fichiers FXML et CSS)
+- `collection.util` : `JsonManager.java` (sérialisation/désérialisation JSON)
 
 ## Outils utilisés
 
@@ -57,5 +58,5 @@ L'application suit le modèle **MVVM** :
 Dans le terminal, depuis le répertoire contenant l'application, exécuter la commande suivante :
 - `java --module-path [JAVAFX] --add-modules javafx.controls,javafx.fxml,javafx.media -jar collection-fxml.jar`
 - où `[JAVAFX]` est le chemin absolu du répertoire "lib" de JavaFX sur la machine utilisée
-- /!\ ne pas oublier le module javafx.media (nécessaire pour utiliser le lecteur mp3)
+- /!\ ne pas oublier le module javafx.media dans la commande (nécessaire pour utiliser le lecteur mp3)
 - la commande ci-dessus fonctionne pour Windows, éventuellement utiliser des \ au lieu des / pour les chemins d'accès sur Linux
