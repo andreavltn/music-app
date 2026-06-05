@@ -41,10 +41,18 @@ est déplacé, l'application affichera le message "fichier introuvable".
 L'application suit le modèle **MVVM** :
 
 - `App.java` : point d'entrée
-- `collection.model` : `Track.java`, `Library.java`
-- `collection.viewmodel` : `LibraryViewModel.java`
+- `collection.model` : `Track.java`, `Library.java` : le modèle de l'application
+- `collection.viewmodel` : `LibraryViewModel.java`, `PlayerViewModel.java`, `TrackFormViewModel.java` : les vues du modèle
 - `collection.view` : `MainController.java`, `TrackFormController.java` (+ fichiers FXML et CSS)
 - `collection.util` : `JsonManager.java` (sérialisation/désérialisation JSON)
+
+### Rôle des ViewModels
+
+- `LibraryViewModel` : gère la liste des titres, le filtrage, le tri, le CRUD et la persistance
+- `PlayerViewModel` : gère l'état du lecteur MP3 (lecture, pause, stop, progression, image de couverture) 
+- et expose des propriétés observables bindées par `MainController`
+- `TrackFormViewModel` : gère la logique du formulaire d'ajout/modification (validation, extraction de durée MP3, 
+- création et mise à jour d'un titre)
 
 ## Outils utilisés
 
