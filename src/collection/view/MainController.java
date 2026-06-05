@@ -147,6 +147,7 @@ public class MainController {
         if (t != null) {
             openForm(t); // ouvre le formulaire de modification
             showDetail(t); // met à jour les détails après fermeture
+            playerViewModel.load(t); // recharge l'affichage
         }
     }
 
