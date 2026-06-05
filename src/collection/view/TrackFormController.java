@@ -24,8 +24,6 @@ public class TrackFormController {
     @FXML private Label errorLabel; // label d'erreur formulaire
 
     private TrackFormViewModel viewModel; // viewModel du formulaire
-    private int lastFilteredSizeArtist = -1; // dernière taille de la liste filtrée artiste (outil)
-    private int lastFilteredSizeAlbum = -1; // idem pour album (outil)
 
     // appelé par MainController pour initialiser le formulaire
     public void init(TrackFormViewModel vm) {
@@ -40,18 +38,22 @@ public class TrackFormController {
         durationField.textProperty().bindBidirectional(vm.durationProperty());
         filePathField.textProperty().bindBidirectional(vm.filePathProperty());
         imagePathField.textProperty().bindBidirectional(vm.imagePathProperty());
-        errorLabel.textProperty().bind(vm.errorProperty()); // unidirectionnel : la View lit l'erreur du ViewModel
+        errorLabel.textProperty().bind(vm.errorProperty());
+
+        // fixe la taille max des listes à 8 éléments
+        artistComboBox.setVisibleRowCount(8);
+        albumComboBox.setVisibleRowCount(8);
 
         // charge les suggestions d'artistes dans la comboBox
         artistComboBox.getItems().setAll(vm.getArtistSuggestions());
 
         // à chaque saisie dans le champ artiste, filtre les titres
-        artistComboBox.getEditor().textProperty().addListener((obs, old, newVal) -> {
+        vm.artistProperty().addListener((obs, old, newVal) -> {
             filterArtists(newVal);
         });
 
         // à chaque saisie dans le champ album, filtre les titres selon l'artiste déjà choisi
-        albumComboBox.getEditor().textProperty().addListener((obs, old, newVal) -> {
+        vm.albumProperty().addListener((obs, old, newVal) -> {
             filterAlbums(newVal, artistComboBox.getEditor().getText());
         });
     }
@@ -61,8 +63,12 @@ public class TrackFormController {
         String lower = query == null ? "" : query.toLowerCase();
         List<String> filtered = viewModel.getArtistSuggestions().stream()
                 .filter(a -> a.toLowerCase().contains(lower)).toList();
-        applyFilter(artistComboBox, filtered, lower, lastFilteredSizeArtist);
-        lastFilteredSizeArtist = Math.max(1, filtered.size()); // met à jour la dernière taille
+        artistComboBox.getItems().setAll(filtered);
+        if (!filtered.isEmpty()) {
+            artistComboBox.show(); // affiche la liste
+        } else {
+            artistComboBox.hide();
+        }
     }
 
     // filtre les suggestions d'albums selon la saisie et l'artiste déjà saisi
@@ -70,20 +76,11 @@ public class TrackFormController {
         String lower = query == null ? "" : query.toLowerCase();
         List<String> filtered = viewModel.getAlbumSuggestions(artist).stream()
                 .filter(a -> a.toLowerCase().contains(lower)).toList();
-        applyFilter(albumComboBox, filtered, lower, lastFilteredSizeAlbum);
-        lastFilteredSizeAlbum = Math.max(1, filtered.size()); // met à jour la dernière taille
-    }
-
-    // méthode utilitaire : applique le filtre sur une ComboBox et rafraîchit l'affichage si nécessaire
-    private void applyFilter(ComboBox<String> cb, List<String> filtered, String lower, int lastSize) {
-        int newSize = Math.max(1, filtered.size());
-        cb.setVisibleRowCount(newSize);
-
-        if (!filtered.isEmpty() && !lower.isBlank()) {
-            // rafraîchit la liste uniquement si sa taille a changé (pour éviter les clignotements)
-            if (newSize != lastSize) { cb.hide(); cb.show(); }
+        albumComboBox.getItems().setAll(filtered);
+        if (!filtered.isEmpty()) {
+            albumComboBox.show(); // affiche la liste
         } else {
-            cb.hide(); // cache la liste si aucun résultat
+            albumComboBox.hide();
         }
     }
 
@@ -125,7 +122,7 @@ public class TrackFormController {
         close(); // ferme la fenêtre du formulaire
     }
 
-    // méthode qui ferme la fenêtre du formulaire
+    // ferme la fenêtre du formulaire
     private void close() {
         ((Stage) titleField.getScene().getWindow()).close();
     }
