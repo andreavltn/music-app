@@ -1,307 +1,132 @@
 package collection.view;
 
-import collection.model.Track;
-import collection.viewmodel.LibraryViewModel;
+import collection.viewmodel.TrackFormViewModel;
 import javafx.fxml.FXML;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.media.Media;
-import javafx.scene.media.MediaPlayer;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import javafx.stage.Window;
-import javafx.util.Duration;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 import java.util.List;
-import java.util.stream.Collectors;
 
+// contrôleur du formulaire d'ajout/modification d'un titre
 public class TrackFormController {
 
     // récupère les composants de l'interface
-    @FXML private ComboBox<String> artistComboBox;
-    @FXML private ComboBox<String> albumComboBox;
-    @FXML private TextField titleField;
-    @FXML private TextField genreField;
-    @FXML private TextField yearField;
-    @FXML private TextField durationField;
-    @FXML private TextField filePathField;
-    @FXML private TextField imagePathField;
-    @FXML private Label errorLabel;
+    @FXML private ComboBox<String> artistComboBox; // liste déroulante artiste (avec autocomplétion)
+    @FXML private ComboBox<String> albumComboBox; // liste déroulante album (avec autocomplétion)
+    @FXML private TextField titleField; // champ titre
+    @FXML private TextField genreField; // champ genre
+    @FXML private TextField yearField;  // champ année
+    @FXML private TextField durationField; // champ durée (secondes)
+    @FXML private TextField filePathField; // champ chemin du fichier MP3 (lecture seule)
+    @FXML private TextField imagePathField; // champ chemin de l'image (lecture seule)
+    @FXML private Label errorLabel; // label d'erreur formulaire
 
-    private LibraryViewModel viewModel;
-    private Track track; // null = ajout, sinon modification
-    private List<String> allArtists; // liste de tous les artistes
-    private int lastFilteredSizeArtist = -1; // outil pour la combobox artist
-    private int lastFilteredSizeAlbum = -1; // idem pour la combobox album
+    private TrackFormViewModel viewModel; // viewModel du formulaire
+    private int lastFilteredSizeArtist = -1; // dernière taille de la liste filtrée artiste (outil)
+    private int lastFilteredSizeAlbum = -1; // idem pour album (outil)
 
-    // méthode qui affiche la formulaire
-    public void init(LibraryViewModel vm, Track track) {
-
-        // récupère les données
+    // appelé par MainController pour initialiser le formulaire
+    public void init(TrackFormViewModel vm) {
         this.viewModel = vm;
-        this.track = track;
 
-        this.allArtists = viewModel.getDistinctArtistNames(); // récupère la liste des artistes
-        artistComboBox.getItems().setAll(this.allArtists); // remplit la comboBox artiste
+        // binding
+        artistComboBox.getEditor().textProperty().bindBidirectional(vm.artistProperty());
+        albumComboBox.getEditor().textProperty().bindBidirectional(vm.albumProperty());
+        titleField.textProperty().bindBidirectional(vm.titleProperty());
+        genreField.textProperty().bindBidirectional(vm.genreProperty());
+        yearField.textProperty().bindBidirectional(vm.yearProperty());
+        durationField.textProperty().bindBidirectional(vm.durationProperty());
+        filePathField.textProperty().bindBidirectional(vm.filePathProperty());
+        imagePathField.textProperty().bindBidirectional(vm.imagePathProperty());
+        errorLabel.textProperty().bind(vm.errorProperty()); // unidirectionnel : la View lit l'erreur du ViewModel
 
-        // à chaque changement de texte sur artist
-        artistComboBox.getEditor().textProperty().addListener((obs, oldVal, newVal) -> {
-            filterArtists(newVal); // filtre la liste d'artistes
+        // charge les suggestions d'artistes dans la comboBox
+        artistComboBox.getItems().setAll(vm.getArtistSuggestions());
+
+        // à chaque saisie dans le champ artiste, filtre les titres
+        artistComboBox.getEditor().textProperty().addListener((obs, old, newVal) -> {
+            filterArtists(newVal);
         });
 
-        // à chaque changement de texte sur album
-        albumComboBox.getEditor().textProperty().addListener((obs, oldVal, newVal) -> {
-            String currentArtist = artistComboBox.getEditor().getText().trim(); // récupère l'artiste actuel
-            filterAlbums(newVal, currentArtist); // filtre la liste des albums par rapport à l'artiste
+        // à chaque saisie dans le champ album, filtre les titres selon l'artiste déjà choisi
+        albumComboBox.getEditor().textProperty().addListener((obs, old, newVal) -> {
+            filterAlbums(newVal, artistComboBox.getEditor().getText());
         });
-
-        // si c'est une modification
-        if (track != null) {
-
-            // remplit les champs avec les données existantes
-            artistComboBox.setValue(track.getArtistName());
-            albumComboBox.setValue(track.getAlbumTitle());
-            titleField.setText(track.getTitle());
-            genreField.setText(track.getGenre());
-            yearField.setText(String.valueOf(track.getYear()));
-            durationField.setText(String.valueOf(track.getDuration()));
-
-            // si le titre a un fichier mp3
-            if (track.hasFile()) {
-                filePathField.setText(track.getFilePath()); // affiche son chemin
-            }
-
-            // si le titre a une image
-            if (track.hasImage()) {
-                imagePathField.setText(track.getImagePath()); // affiche son chemin
-            }
-        }
-
-        // sinon ne fait rien (champs vides)
     }
 
-    // filtre les artistes selon la saisie et met à jour la comboBox artiste
+    // filtre les suggestions d'artistes selon la saisie
     private void filterArtists(String query) {
-
-        // récupère ce qui est saisi, en minuscules
-        String lowerQuery = (query == null) ? "" : query.toLowerCase();
-
-        // crée une liste filtrée
-        List<String> filtered = allArtists.stream()
-                .filter(a -> a.toLowerCase().contains(lowerQuery))
-                .collect(Collectors.toList());
-
-        // applique le filtre sur la comboBox
-        applyFilter(artistComboBox, filtered, lowerQuery, lastFilteredSizeArtist);
+        String lower = query == null ? "" : query.toLowerCase();
+        List<String> filtered = viewModel.getArtistSuggestions().stream()
+                .filter(a -> a.toLowerCase().contains(lower)).toList();
+        applyFilter(artistComboBox, filtered, lower, lastFilteredSizeArtist);
         lastFilteredSizeArtist = Math.max(1, filtered.size()); // met à jour la dernière taille
     }
 
-    // filtre les albums selon l'artiste saisi + la saisie album en cours, et met à jour la comboBox album
-    private void filterAlbums(String query, String artistQuery) {
-
-        // récupère ce qui est saisi, en minuscules
-        String lowerQuery = query == null ? "" : query.toLowerCase();
-        String lowerArtist = artistQuery == null ? "" : artistQuery.toLowerCase();
-
-        // crée une liste filtrée
-        List<String> filtered = viewModel.getDistinctAlbumTitles().stream()
-                .filter(a -> lowerArtist.isBlank() || viewModel.getAlbumArtist(a).toLowerCase().contains(lowerArtist))
-                .filter(a -> a.toLowerCase().contains(lowerQuery))
-                .collect(Collectors.toList());
-
-        // applique le filtre sur la comboBox
-        applyFilter(albumComboBox, filtered, lowerQuery, lastFilteredSizeAlbum);
+    // filtre les suggestions d'albums selon la saisie et l'artiste déjà saisi
+    private void filterAlbums(String query, String artist) {
+        String lower = query == null ? "" : query.toLowerCase();
+        List<String> filtered = viewModel.getAlbumSuggestions(artist).stream()
+                .filter(a -> a.toLowerCase().contains(lower)).toList();
+        applyFilter(albumComboBox, filtered, lower, lastFilteredSizeAlbum);
         lastFilteredSizeAlbum = Math.max(1, filtered.size()); // met à jour la dernière taille
     }
 
-    // méthode utilitaire qui applique le filtre sur une ComboBox
-    private void applyFilter(ComboBox<String> comboBox, List<String> filtered, String lowerQuery, int lastSize) {
-
-        // récupère la taille ajustée et met à jour l'affichage de la comboBox
+    // méthode utilitaire : applique le filtre sur une ComboBox et rafraîchit l'affichage si nécessaire
+    private void applyFilter(ComboBox<String> cb, List<String> filtered, String lower, int lastSize) {
         int newSize = Math.max(1, filtered.size());
-        comboBox.setVisibleRowCount(newSize);
+        cb.setVisibleRowCount(newSize);
 
-        // si il y a au moins un résultat
-        if (!filtered.isEmpty() && !lowerQuery.isBlank()) {
-            // si la taille de la liste des résultats a changé
-            if (newSize != lastSize) {
-                // rafraichit l'affichage de la liste
-                comboBox.hide();
-                comboBox.show();
-            }
-        } else { // sinon cache la liste (pas de résultat correspondant)
-            comboBox.hide();
+        if (!filtered.isEmpty() && !lower.isBlank()) {
+            // rafraîchit la liste uniquement si sa taille a changé (pour éviter les clignotements)
+            if (newSize != lastSize) { cb.hide(); cb.show(); }
+        } else {
+            cb.hide(); // cache la liste si aucun résultat
         }
+    }
+
+    @FXML // au clic sur "Parcourir" (fichier MP3)
+    private void onChooseFile() {
+        FileChooser fc = new FileChooser();
+        fc.setTitle("Choisir un fichier MP3");
+        fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("Fichiers MP3", "*.mp3"));
+        File f = fc.showOpenDialog(titleField.getScene().getWindow());
+        viewModel.onFileSelected(f); // délègue la mise à jour du chemin et de la durée au ViewModel
+    }
+
+    @FXML // au clic sur "Parcourir" (image)
+    private void onChooseImage() {
+        FileChooser fc = new FileChooser();
+        fc.setTitle("Choisir une image");
+        fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("Images", "*.png", "*.jpg", "*.jpeg"));
+        File f = fc.showOpenDialog(titleField.getScene().getWindow());
+        if (f != null) viewModel.imagePathProperty().set(f.getAbsolutePath()); // met à jour la propriété du ViewModel
+    }
+
+    @FXML // au clic sur la croix à côté du fichier MP3
+    private void onClearFile() {
+        viewModel.clearFile();  // supprime le fichier choisi
+    }
+
+    @FXML // au clic sur la croix à côté de l'image
+    private void onClearImage() {
+        viewModel.clearImage(); // supprime l'image choisie
+    }
+
+    @FXML // au clic sur "Enregistrer"
+    private void onSave() {
+        if (viewModel.save()) close(); // délègue la validation + sauvegarde au viewModel
+    }
+
+    @FXML // au clic sur "Annuler"
+    private void onCancel() {
+        close(); // ferme la fenêtre du formulaire
     }
 
     // méthode qui ferme la fenêtre du formulaire
     private void close() {
-        Scene scene = titleField.getScene(); // récupère la scène
-        Stage stage = (Stage) scene.getWindow(); // récupère la fenêtre
-        stage.close(); // ferme
-    }
-
-    @FXML // au clic sur "Fichier mp3"
-    private void onChooseFile() {
-
-        FileChooser fileChooser = new FileChooser(); // crée un sélecteur de fichier
-        fileChooser.setTitle("Choisir un fichier MP3"); // titre de la fenêtre
-        fileChooser.getExtensionFilters().add(
-                new FileChooser.ExtensionFilter("Fichiers MP3", "*.mp3") // seulement les .mp3
-        );
-
-        Window window = titleField.getScene().getWindow(); // récupère la fenêtre
-        File selected = fileChooser.showOpenDialog(window); // ouvre le sélecteur de fichier
-        // et récupère le fichier choisi
-
-        if (selected != null) { // si il existe
-            String path = selected.getAbsolutePath(); // récupère le chemin absolu du fichier
-            filePathField.setText(path); // affiche le chemin absolu du fichier
-
-            // ici on va créer un lecteur media temporaire pour récupérer
-            // la durée totale du mp3 associée au titre et l'afficher
-            // ensuite on le supprime car on n'en a plus besoin
-
-            // convertit le mp3 en URI puis crée un lecteur média temporaire
-            Media media = new Media(selected.toURI().toString());
-            MediaPlayer tempPlayer = new MediaPlayer(media);
-
-            // dès qu'il est prêt
-            tempPlayer.setOnReady(() -> {
-                // récupère la durée totale et met à jour le champ durée
-                Duration total = tempPlayer.getTotalDuration();
-                durationField.setText(String.valueOf((int) total.toSeconds()));
-                tempPlayer.dispose(); // libère les ressources du lecteur
-            });
-        }
-    }
-
-    @FXML // au clic sur "Image"
-    private void onChooseImage() {
-
-        FileChooser fileChooser = new FileChooser(); // crée un sélecteur de fichier
-        fileChooser.setTitle("Choisir une image"); // titre de la fenêtre
-        fileChooser.getExtensionFilters().add(
-                new FileChooser.ExtensionFilter("Images", "*.png", "*.jpg", "*.jpeg") // seulement les images
-        );
-
-        Window window = titleField.getScene().getWindow(); // récupère la fenêtre
-        File selected = fileChooser.showOpenDialog(window); // ouvre le sélecteur de fichier
-        // et récupère le fichier choisi
-
-        if (selected != null) {
-            imagePathField.setText(selected.getAbsolutePath()); // met à jour le chemin
-        }
-    }
-
-    @FXML // à l'enregistrement du formulaire (bouton "Enregistrer")
-    private void onSave() {
-
-        // récupère et valide les champs
-        String title = titleField.getText().trim();
-        String artist = artistComboBox.getEditor().getText().trim();
-        String album = albumComboBox.getEditor().getText().trim();
-        String genre = genreField.getText().trim();
-        String selectedPath = filePathField.getText().trim();
-        String selectedImage = imagePathField.getText().trim();
-
-        // si le titre est vide
-        if (title.isBlank()) {
-            errorLabel.setText("Le titre est obligatoire."); // erreur
-            return;
-        }
-
-        int year, duration;
-
-        // vérifie si l'année est un nombre
-        try {
-            year = Integer.parseInt(yearField.getText().trim());
-        } catch (NumberFormatException e) {
-            errorLabel.setText("L'année doit être un nombre."); // erreur
-            return;
-        }
-
-        // idem pour la durée
-        try {
-            duration = Integer.parseInt(durationField.getText().trim());
-        } catch (NumberFormatException e) {
-            errorLabel.setText("La durée doit être un nombre."); // erreur
-            return;
-        }
-
-        // si il n'y a pas de titre, formulaire d'ajout
-        if (this.track == null) {
-
-            // crée un nouveau titre avec les données du formulaire
-            Track track = new Track(viewModel.createTrackId(), title, artist, album, genre, year, duration);
-
-            // si un fichier mp3 a été choisi
-            if (!selectedPath.isBlank()) {
-                track.setMp3Path(selectedPath); // met à jour le chemin du titre
-            }
-
-            // si une image a été choisie
-            if (!selectedImage.isBlank()) {
-                track.setImagePath(selectedImage); // met à jour le chemin de l'image
-            }
-
-            viewModel.addTrack(track); // ajout à la librairie
-
-        } else { // sinon c'est un formulaire de modification
-
-            // met à jour les champs du titre en paramètre
-            track.setArtistName(artist);
-            track.setAlbumTitle(album);
-            track.setTitle(title);
-            track.setGenre(genre);
-            track.setYear(year);
-            track.setDuration(duration);
-
-            // si un fichier mp3 a été choisi
-            if (!selectedPath.isBlank()) {
-                track.setMp3Path(selectedPath); // met à jour le chemin du titre
-            } else {
-                track.setMp3Path(null); // sinon retire le chemin
-            }
-
-            // si une image a été choisie
-            if (!selectedImage.isBlank()) {
-                track.setImagePath(selectedImage); // met à jour le chemin de l'image
-            } else {
-                track.setImagePath(null); // sinon retire le chemin
-            }
-
-            // met à jour le titre dans la librairie
-            viewModel.updateTrack(track);
-        }
-
-        close(); // ferme le formulaire
-    }
-
-    @FXML // au clic sur la croix près du choix du mp3
-    private void onClearFile() {
-        // supprime le fichier
-        filePathField.setText("");
-        if (track != null) {
-            track.setMp3Path(null);
-        }
-    }
-
-    @FXML // au clic sur la croix près du choix de l'image
-    private void onClearImage() {
-        // supprime l'image
-        imagePathField.setText("");
-        if (track != null) {
-            track.setImagePath(null);
-        }
-    }
-
-    @FXML // à la fermeture du formulaire (bouton "Annuler")
-    private void onCancel() {
-        close();
+        ((Stage) titleField.getScene().getWindow()).close();
     }
 }

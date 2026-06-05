@@ -27,8 +27,6 @@ public class LibraryViewModel {
         library.replaceAll(JsonManager.load()); // charge la librairie (si elle existe)
         this.filteredTracks = new FilteredList<>(library.getTracks()); // liste des titres (filtrée)
         this.sortedTracks = new SortedList<>(filteredTracks); // liste des titres (filtrée et triée)
-
-        JsonManager.save(library.getTracks()); // sauvegarde les titres
     }
 
     public ObservableList<Track> getTracks() {
