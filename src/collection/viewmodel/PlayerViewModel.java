@@ -48,16 +48,10 @@ public class PlayerViewModel {
 
     // appelé à la sélection d'un titre dans la liste
     public void load(Track track) {
-
-        stop(); // arrête la lecture en cours
-
-        // si aucun titre sélectionné, réinitialise l'affichage
         if (track == null) {
-            titleText.set("");
-            artistText.set("");
-            coverImage.set(null);
-            timeLabelText.set("0:00 / 0:00");
             return;
+        } else {
+            stop();
         }
 
         // met à jour le nom du titre et de l'artiste
@@ -115,10 +109,12 @@ public class PlayerViewModel {
 
             // à chaque avancée de la lecture, met à jour la barre de progression + label
             mediaPlayer.currentTimeProperty().addListener((obs, oldT, newT) -> {
-                Duration total = mediaPlayer.getTotalDuration();
-                if (total != null && total.greaterThan(Duration.ZERO)) {
-                    progress.set(newT.toSeconds() / total.toSeconds()); // maj barre de progression
-                    timeLabelText.set(formatTime(newT) + " / " + formatTime(total)); // maj texte
+                if (mediaPlayer != null) {
+                    Duration total = mediaPlayer.getTotalDuration();
+                    if (total != null && total.greaterThan(Duration.ZERO)) {
+                        progress.set(newT.toSeconds() / total.toSeconds()); // maj barre de progression
+                        timeLabelText.set(formatTime(newT) + " / " + formatTime(total)); // maj texte
+                    }
                 }
             });
 

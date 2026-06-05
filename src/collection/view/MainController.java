@@ -60,11 +60,21 @@ public class MainController {
         playerImage.imageProperty().bind(playerViewModel.coverImageProperty());
 
         // à chaque sélection d'un titre dans la liste
-        trackListView.getSelectionModel().selectedItemProperty()
-                .addListener((obs, old, newVal) -> {
+        trackListView.getSelectionModel().selectedItemProperty().addListener((obs, old, newVal) -> {
                     showDetail(newVal); // affiche les détails du titre
-                    playerViewModel.load(newVal); // charge le titre dans le lecteur
-                });
+        });
+
+        // au double clic d'un titre dans la liste
+        trackListView.setOnMouseClicked(event -> {
+            if (event.getClickCount() == 2) { // seulement si 2 clics
+                // affiche le lecteur du titre
+                Track selectedTrack = trackListView.getSelectionModel().getSelectedItem();
+                if (selectedTrack != null) {
+                    playerViewModel.load(selectedTrack);
+                    playerViewModel.playOrPause(selectedTrack);
+                }
+            }
+        });
 
         // à chaque entrée dans la barre de recherche
         searchField.textProperty().addListener((obs, old, newVal) -> {
@@ -184,7 +194,17 @@ public class MainController {
 
     @FXML // au clic sur le bouton play/pause
     private void onPlayOrPause() {
-        playerViewModel.playOrPause(trackListView.getSelectionModel().getSelectedItem()); // délègue au ViewModel
+        // si le lecteur à déjà un morceau chargé, fait juste play/pause normalement
+        if (playerViewModel.hasPlayer()) {
+            playerViewModel.playOrPause(null);
+        } else {
+            // sinon premier démarrage, prend le titre sélectionné dans la liste et le joue
+            Track selected = trackListView.getSelectionModel().getSelectedItem();
+            if (selected != null) {
+                playerViewModel.load(selected);
+                playerViewModel.playOrPause(selected);
+            }
+        }
     }
 
     @FXML // au clic sur le bouton stop

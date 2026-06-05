@@ -22,10 +22,11 @@ de couverture, affichée sur le même panneau.
 
 ### Fonctionnalité supplémentaire : Lecteur MP3 intégré
 
-Un lecteur audio est intégré directement dans l'interface. Il permet de :
+Un lecteur audio est intégré directement dans l'interface. Un clic simple sur un titre affiche ses informations, 
+un clic double ouvre le lecteur et lance le titre (si un mp3 est associé). Celui-ci permet de :
 - Lire, mettre en pause et stopper la lecture d'un fichier MP3 associé à un titre
 - Afficher l'image de couverture du titre sélectionné
-- Suivre l'avancée de la lecture via une barre de progression et un affichage du temps écoulé / total
+- Suivre l'avancée de la lecture via une barre de progression et un affichage du temps écoulé / total.
 
 ### Persistance automatique
 
