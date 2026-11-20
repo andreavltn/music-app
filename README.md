@@ -62,11 +62,23 @@ L'application suit le modèle **MVVM** :
 - Gson (sérialisation JSON)
 - javafx.scene.media (lecture MP3)
 
-## Comment utiliser l'application?
+## Prérequis
 
-Télécharger l'application "MusicApp.jar", puis dans le terminal, depuis le répertoire contenant l'application, exécuter la commande suivante :
-- `java --module-path [JAVAFX] --add-modules javafx.controls,javafx.fxml,javafx.media -jar MusicApp.jar`
-- où `[JAVAFX]` est le chemin absolu du répertoire "lib" de JavaFX sur la machine utilisée
-- /!\ ne pas oublier le module javafx.media dans la commande (nécessaire pour utiliser le lecteur mp3)
-- la commande ci-dessus fonctionne pour Windows, éventuellement utiliser des \ au lieu des / pour les chemins d'accès sur Linux
-- si un library.json est déjà présent dans le répertoire de l'app, elle s'en servira directement comme librairie
+- Java 24 ou supérieur (JDK ou JRE)
+- JavaFX SDK 24.0.2, à télécharger séparément : https://gluonhq.com/products/javafx/
+- MusicApp.jar (voir l'onglet Releases)
+
+Gson (sérialisation JSON) est déjà inclus dans le .jar, rien d'autre à installer.
+
+## Lancement
+
+Ouvrir un terminal dans le dossier contenant MusicApp.jar, puis :
+
+Windows :
+java --module-path "C:\chemin\vers\javafx-sdk-24.0.2\lib" --add-modules javafx.controls,javafx.fxml,javafx.media -jar MusicApp.jar
+
+Linux / macOS :
+java --module-path /chemin/vers/javafx-sdk-24.0.2/lib --add-modules javafx.controls,javafx.fxml,javafx.media -jar MusicApp.jar
+
+Remplacer le chemin par celui du dossier "lib" de votre JavaFX SDK.
+Si un fichier library.json est présent dans le dossier de lancement, il est chargé automatiquement comme librairie.
