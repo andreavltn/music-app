@@ -50,10 +50,8 @@ L'application suit le modèle **MVVM** :
 ### Rôle des ViewModels
 
 - `LibraryViewModel` : gère la liste des titres, le filtrage, le tri, le CRUD et la persistance
-- `PlayerViewModel` : gère l'état du lecteur MP3 (lecture, pause, stop, progression, image de couverture) 
-- et expose des propriétés observables bindées par `MainController`
-- `TrackFormViewModel` : gère la logique du formulaire d'ajout/modification (validation, extraction de durée MP3, 
-- création et mise à jour d'un titre)
+- `PlayerViewModel` : gère l'état du lecteur MP3 (lecture, pause, stop, progression, image de couverture) et expose des propriétés observables bindées par `MainController`
+- `TrackFormViewModel` : gère la logique du formulaire d'ajout/modification (validation, extraction de durée MP3, création et mise à jour d'un titre)
 
 ## Outils utilisés
 
@@ -65,20 +63,27 @@ L'application suit le modèle **MVVM** :
 ## Prérequis
 
 - Java 24 ou supérieur (JDK ou JRE)
-- JavaFX SDK 24.0.2, à télécharger séparément : https://gluonhq.com/products/javafx/
-- MusicApp.jar (voir l'onglet Releases)
+- JavaFX SDK 24.0.2, à télécharger séparément : [gluonhq.com/products/javafx](https://gluonhq.com/products/javafx/)
+- MusicApp.jar : [Releases](https://github.com/andreavltn/music-app/releases)
 
 Gson (sérialisation JSON) est déjà inclus dans le .jar, rien d'autre à installer.
 
 ## Lancement
 
-Ouvrir un terminal dans le dossier contenant MusicApp.jar, puis :
+Ouvrir un terminal dans le dossier contenant `MusicApp.jar`, puis exécuter :
 
-Windows :
+**Windows**
+
+```powershell
 java --module-path "C:\chemin\vers\javafx-sdk-24.0.2\lib" --add-modules javafx.controls,javafx.fxml,javafx.media -jar MusicApp.jar
+```
 
-Linux / macOS :
+**Linux / macOS**
+
+```bash
 java --module-path /chemin/vers/javafx-sdk-24.0.2/lib --add-modules javafx.controls,javafx.fxml,javafx.media -jar MusicApp.jar
+```
 
-Remplacer le chemin par celui du dossier "lib" de votre JavaFX SDK.
-Si un fichier library.json est présent dans le dossier de lancement, il est chargé automatiquement comme librairie.
+> Remplacer le chemin par celui du dossier `lib` de votre installation de JavaFX, et ne pas oublier le module `javafx.media` qui est nécessaire à l'utilisation du lecteur MP3.
+
+Si un fichier `library.json` est présent dans le dossier de lancement, il est chargé automatiquement comme librairie.
